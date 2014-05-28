@@ -39,6 +39,28 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glDepthFunc(GL_LEQUAL)
     gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     gl.glShadeModel(GL_SMOOTH)
+       val mat_specular = Array(1.0f, 1.0f, 1.0f, 1.0f)
+    val mat_shininess = Array(50.0f)
+    val light_position = Array(1.0f, 1.0f, 1.0f, 0.0f)
+
+    val light_diffuse = Array(1.0f, 0.0f, 0.0f, 1.0f)
+//    glClearColor (0.0, 0.0, 0.0, 0.0);
+//    glShadeModel (GL_SMOOTH);
+
+//     gl.glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular, 0)
+//     gl.glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess, 0)
+//     gl.glLightfv(GL_LIGHT0, GL_POSITION, light_position, 0)
+//
+//     gl.glEnable(GL_LIGHTING);
+//     gl.glEnable(GL_LIGHT0)
+//     gl.glEnable(GL_DEPTH_TEST)
+
+    gl.glLightfv( GL_LIGHT0, GL_POSITION, mat_specular, 0 )
+    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  light_diffuse, 0 )
+    gl.glLightfv( GL_LIGHT0, GL_AMBIENT,  mat_specular, 0 )
+    gl.glLightfv( GL_LIGHT0, GL_SPECULAR, mat_specular, 0 )
+    gl.glEnable( GL_LIGHTING )
+    gl.glEnable( GL_LIGHT0 )
   }
 
   /**
@@ -52,7 +74,10 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glMatrixMode(GL_PROJECTION)
     gl.glLoadIdentity()
     glu.gluPerspective(90.0, aspect, 0.1, 500.0)
-    glu.gluLookAt(0, -300, 0, 0, 0, 0, 0, 1, 12)
+    //glu.gluLookAt(0, -300, 0, 0, 0, 0, 0, 1, 12)
+
+
+
     gl.glMatrixMode(GL_MODELVIEW)
     gl.glLoadIdentity()
   }
@@ -60,11 +85,9 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
   def drawCube(gl: GL2, x: Float, y: Float, z: Float) = {
     gl.glLoadIdentity()
 //    gl.glTranslatef(0.0f, 0.0f, -70.0f)
+//    val whiteMaterial = Array(1.0f, 1.0f, 1.0f, 1.0f)
+//    gl.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, whiteMaterial, 0);
     gl.glTranslatef(x, y, z)
-//    gl.glRotatef(angleCube, 1.0f, 1.0f, 1.0f)
-//    /    gl.glRotatef( angleCube, 1, 0, 0 )
-//    gl.glRotatef(45, 0, 0, 1)
-//    glu.gluLookAt(0,0,0, 10 * Math.cos(angleCube) , 10 * Math.sin(angleCube), 0 , 0,1,0)
     val l_length = 1.0f
     val l_height = 1.0f
     val l_width = 1.0f
