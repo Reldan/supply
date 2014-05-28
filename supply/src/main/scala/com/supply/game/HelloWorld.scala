@@ -41,9 +41,9 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glShadeModel(GL_SMOOTH)
        val mat_specular = Array(1.0f, 1.0f, 1.0f, 1.0f)
     val mat_shininess = Array(50.0f)
-    val light_position = Array(1.0f, 1.0f, 1.0f, 0.0f)
+    val light_position = Array(50.0f, 1.0f, 1.0f, 1.0f)
 
-    val light_diffuse = Array(1.0f, 0.0f, 0.0f, 1.0f)
+    val light_diffuse = Array(1.0f, 1.0f, 0.0f, 1.0f)
 //    glClearColor (0.0, 0.0, 0.0, 0.0);
 //    glShadeModel (GL_SMOOTH);
 
@@ -55,7 +55,8 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
 //     gl.glEnable(GL_LIGHT0)
 //     gl.glEnable(GL_DEPTH_TEST)
 
-    gl.glLightfv( GL_LIGHT0, GL_POSITION, mat_specular, 0 )
+    gl.glMaterialfv(GL_LIGHT0, GL_SHININESS, mat_shininess, 0)
+    gl.glLightfv( GL_LIGHT0, GL_POSITION, light_position, 0 )
     gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  light_diffuse, 0 )
     gl.glLightfv( GL_LIGHT0, GL_AMBIENT,  mat_specular, 0 )
     gl.glLightfv( GL_LIGHT0, GL_SPECULAR, mat_specular, 0 )
@@ -82,11 +83,13 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glLoadIdentity()
   }
 
-  def drawCube(gl: GL2, x: Float, y: Float, z: Float) = {
+  def drawCube(gl: GL2, x: Float, y: Float, z: Float, color: Byte = 0) = {
     gl.glLoadIdentity()
 //    gl.glTranslatef(0.0f, 0.0f, -70.0f)
-//    val whiteMaterial = Array(1.0f, 1.0f, 1.0f, 1.0f)
-//    gl.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, whiteMaterial, 0);
+    val colorAm = Array(color % 2, color % 3 % 2, 1.0f, 1.0f)
+    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
+
+
     gl.glTranslatef(x, y, z)
     val l_length = 1.0f
     val l_height = 1.0f
@@ -151,7 +154,11 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     Range(0, level.data.size).foreach(
       i ⇒
         Range(0, level.data(i) + 1).foreach{ j =>
-        drawCube(gl, (i % level.width - level.width / 2) * 2.1f, (i / level.height - level.height / 2) * 2.1f, j * 2.1f - 100)
+        drawCube(gl,
+          (i % level.width - level.width / 2) * 2f,
+          (i / level.height - level.height / 2) * 2f,
+          j * 2f - 100,
+          level.boxType(i))
         }
     )
 

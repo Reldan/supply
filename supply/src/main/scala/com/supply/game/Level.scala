@@ -4,6 +4,7 @@ import scala.util.Random
 
 class Level(val height: Int, val width: Int) {
   var data = new Array[Byte](height * width)
+  var boxType = new Array[Byte](height * width)
 
   val rnd = new Random()
   transform()
@@ -11,6 +12,7 @@ class Level(val height: Int, val width: Int) {
   def transform() = {
     Range(0, data.size).foreach{
       k ⇒ data(k) = rnd.nextInt(10).toByte
+          boxType(k) = rnd.nextInt(5).toByte
     }
   }
 
