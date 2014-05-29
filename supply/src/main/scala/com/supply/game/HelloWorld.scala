@@ -20,7 +20,9 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
   private var glu: GLU = null
   private var angleCube: Float = 0
   private var speedCube: Float = -1.5f
-  private val level = new Level(100, 100)
+  private val chunk = new Chunk(16, 16, 16)
+  chunk.transform()
+  val vertex = new VertexArray()
 
   /** Constructor to setup the GUI for this Component */
   addGLEventListener(this)
@@ -44,16 +46,6 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     val light_position = Array(50.0f, 1.0f, 1.0f, 1.0f)
 
     val light_diffuse = Array(1.0f, 1.0f, 0.0f, 1.0f)
-//    glClearColor (0.0, 0.0, 0.0, 0.0);
-//    glShadeModel (GL_SMOOTH);
-
-//     gl.glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular, 0)
-//     gl.glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess, 0)
-//     gl.glLightfv(GL_LIGHT0, GL_POSITION, light_position, 0)
-//
-//     gl.glEnable(GL_LIGHTING);
-//     gl.glEnable(GL_LIGHT0)
-//     gl.glEnable(GL_DEPTH_TEST)
 
     gl.glMaterialfv(GL_LIGHT0, GL_SHININESS, mat_shininess, 0)
     gl.glLightfv( GL_LIGHT0, GL_POSITION, light_position, 0 )
@@ -62,6 +54,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glLightfv( GL_LIGHT0, GL_SPECULAR, mat_specular, 0 )
     gl.glEnable( GL_LIGHTING )
     gl.glEnable( GL_LIGHT0 )
+    vertex.init(gl)
   }
 
   /**
@@ -75,75 +68,10 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glMatrixMode(GL_PROJECTION)
     gl.glLoadIdentity()
     glu.gluPerspective(90.0, aspect, 0.1, 500.0)
-    //glu.gluLookAt(0, -300, 0, 0, 0, 0, 0, 1, 12)
-
-
 
     gl.glMatrixMode(GL_MODELVIEW)
     gl.glLoadIdentity()
   }
-
-  def drawCube(gl: GL2, x: Float, y: Float, z: Float, color: Byte = 0) = {
-    gl.glLoadIdentity()
-//    gl.glTranslatef(0.0f, 0.0f, -70.0f)
-    val colorAm = Array(color % 2, color % 3 % 2, 1.0f, 1.0f)
-    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
-
-
-    gl.glTranslatef(x, y, z)
-    val l_length = 1.0f
-    val l_height = 1.0f
-    val l_width = 1.0f
-    gl.glBegin(GL_QUADS)
-
-
-    gl.glColor3f(0.0f, 1.0f, 0.0f)
-    gl.glNormal3f(0.0f, 0.0f, -1.0f)
-    gl.glVertex3f(l_length, -l_height, -l_width)
-    gl.glVertex3f(-l_length, -l_height, -l_width)
-    gl.glVertex3f(-l_length, l_height, -l_width)
-    gl.glVertex3f(l_length, l_height, -l_width)
-
-    gl.glColor3f(1.0f, 0.5f, 0.0f)
-    gl.glNormal3f(0.0f, 0.0f, 1.0f)
-    gl.glVertex3f(-l_length, -l_height, l_width)
-    gl.glVertex3f(l_length, -l_height, l_width)
-    gl.glVertex3f(l_length, l_height, l_width)
-    gl.glVertex3f(-l_length, l_height, l_width)
-
-    gl.glColor3f(1.0f, 0.0f, 0.0f)
-    gl.glNormal3f(1.0f, 0.0f, 0.0f)
-    gl.glVertex3f(l_length, -l_height, l_width)
-    gl.glVertex3f(l_length, -l_height, -l_width)
-    gl.glVertex3f(l_length, l_height, -l_width)
-    gl.glVertex3f(l_length, l_height, l_width)
-
-    gl.glColor3f(1.0f, 1.0f, 0.0f)
-    gl.glNormal3f(-1.0f, 0.0f, 0.0f)
-    gl.glVertex3f(-l_length, -l_height, -l_width)
-    gl.glVertex3f(-l_length, -l_height, l_width)
-    gl.glVertex3f(-l_length, l_height, l_width)
-    gl.glVertex3f(-l_length, l_height, -l_width)
-
-    gl.glColor3f(0.0f, 0.0f, 1.0f)
-    gl.glNormal3f(0.0f, -1.0f, 0.0f)
-    gl.glVertex3f(-l_length, -l_height, -l_width)
-    gl.glVertex3f(l_length, -l_height, -l_width)
-    gl.glVertex3f(l_length, -l_height, l_width)
-    gl.glVertex3f(-l_length, -l_height, l_width)
-
-    gl.glColor3f(1.0f, 0.0f, 1.0f)
-    gl.glNormal3f(0.0f, 1.0f, 0.0f)
-    gl.glVertex3f(l_length, l_height, -l_width)
-    gl.glVertex3f(-l_length, l_height, -l_width)
-    gl.glVertex3f(-l_length, l_height, l_width)
-    gl.glVertex3f(l_length, l_height, l_width)
-
-
-
-    gl.glEnd()
-  }
-
 
   /**
    * Called back by the animator to perform rendering.
@@ -151,18 +79,10 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
   def display(drawable: GLAutoDrawable) {
     val gl: GL2 = drawable.getGL.getGL2
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    Range(0, level.data.size).foreach(
-      i ⇒
-        Range(0, level.data(i) + 1).foreach{ j =>
-        drawCube(gl,
-          (i % level.width - level.width / 2) * 2f,
-          (i / level.height - level.height / 2) * 2f,
-          j * 2f - 100,
-          level.boxType(i))
-        }
-    )
-
-    angleCube += speedCube
+    chunk.render(gl)
+//
+//    angleCube += speedCube
+    vertex.draw(gl)
   }
 
   /**
@@ -175,10 +95,9 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
 
   override def keyPressed(e: KeyEvent): Unit = {
     if (e.getKeyChar == 'r') {
-      level.transform()
+      chunk.transform()
     }
     else if (e.getKeyChar == 's') {
-      level.smooth()
     }
     else if (e.getKeyCode == KeyEvent.VK_ESCAPE) {
       System.exit(0)
