@@ -15,7 +15,7 @@ val arch = if (os == "macosx") "universal" else sys.props("os.arch") match {
 val vers = "2.1.0"
 val sp = "natives-" + os + "-" + arch
 
-
-libraryDependencies += "org.jogamp.jogl" % "jogl-all" % vers classifier sp
-
-libraryDependencies += "org.jogamp.gluegen" % "gluegen-rt" % vers classifier sp
+libraryDependencies ++= Seq("org.jogamp.jogl" % "jogl-all" % vers classifier sp,
+"org.jogamp.jogl" % "jogl-all" % vers,
+"org.jogamp.gluegen" % "gluegen-rt" % vers classifier sp,
+"org.jogamp.gluegen" % "gluegen-rt" % vers)
