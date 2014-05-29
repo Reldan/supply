@@ -22,7 +22,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
   private var speedCube: Float = -1.5f
   private val chunk = new Chunk(16, 16, 16)
   chunk.transform()
-  val vertex = new VertexArray()
+//  val vertex = new VertexArray()
 
   /** Constructor to setup the GUI for this Component */
   addGLEventListener(this)
@@ -54,7 +54,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glLightfv( GL_LIGHT0, GL_SPECULAR, mat_specular, 0 )
     gl.glEnable( GL_LIGHTING )
     gl.glEnable( GL_LIGHT0 )
-    vertex.init(gl)
+//    vertex.init(gl)
   }
 
   /**
@@ -82,7 +82,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     chunk.render(gl)
 //
 //    angleCube += speedCube
-    vertex.draw(gl)
+//    vertex.draw(gl)
   }
 
   /**
