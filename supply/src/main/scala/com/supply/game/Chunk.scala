@@ -2,13 +2,11 @@ package com.supply.game
 
 import scala.util.Random
 import javax.media.opengl.fixedfunc.GLPointerFunc
-import javax.media.opengl.GL2
 import javax.media.opengl.GL._
-import javax.media.opengl.GL2ES1._
 import javax.media.opengl.fixedfunc.GLLightingFunc._
-import javax.media.opengl.fixedfunc.GLPointerFuncUtil._
-import javax.media.opengl.fixedfunc.GLMatrixFunc._
-import javax.media.opengl.GL2GL3._
+import java.nio.{ByteOrder, ByteBuffer}
+
+import javax.media.opengl._
 
 /**
  * Created by reldan on 29/05/14.
@@ -17,31 +15,33 @@ class Chunk(width: Int, height: Int, depth: Int) {
   val data = Array.fill(width, height, depth)(0.toByte)
 
   var boxType = new Array[Byte](height * width)
-//  val indicesBuf = Buffers.newDirectFloatBuffer(width * height * depth * 12 * 3 * 3)
-//  val normalBuf = Buffers.newDirectFloatBuffer(width * height * depth * 12 * 3)
   val rnd = new Random()
   transform()
+
+  var indexBufferId = Array(0)
+  var vertexBufferId = Array(0)
+  var vertexByteBuffer = ByteBuffer.allocateDirect(6 * 8 * 3 * 4)
+  var indexByteBuffer = ByteBuffer.allocateDirect(12 * 3 * 4)
+  var normalByteBuffer = ByteBuffer.allocateDirect(12 * 3 * 4)
+  var filledBoxes = 0
+
 
   def transform() = {
     for (x ← 0 until width;
          y ← 0 until height;
          z ← 0 until depth) {
       data(x)(y)(z) = rnd.nextInt(100).toByte
+//      if if (data(x)(y)(z) % 13 == 0) {
     }
   }
 
   def render(gl: GL2) = {
-    gl.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
-    gl.glEnableClientState(GLPointerFunc.GL_COLOR_ARRAY)
-//
-//    gl.glBegin (GL_LINES);
-//    gl.glVertex3f(0f, 0f, 0f);
-//    gl.glVertex3f(0f, 0f, 1000f);
-//    gl.glVertex3f(0f, 0f, 0f);
-//    gl.glVertex3f(0f, 1000f, 0f);
-//    gl.glVertex3f(0f, 0f, 0f);
-//    gl.glVertex3f(1000f, 0f, 0f);
-//    gl.glEnd();
+
+    gl.glLoadIdentity()
+    val colorAm = Array(1, 0, 0, 1.0f)
+    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
+    gl.glTranslatef(0, 0, 0)
+
 
 //    gl.glVertexPointer(2, GL2.GL_INT, 0, verticesBuf)
     for (x ← 0 until width;
@@ -50,121 +50,101 @@ class Chunk(width: Int, height: Int, depth: Int) {
       if (data(x)(y)(z) % 13 == 0) {
         val newX = (x % width - width / 2) * 2f
         val newY = (y % height - height / 2) * 2f
-        val newZ = z * 2f - 100
-        drawCube(gl, newX, newY, newZ, data(x)(y)(z))
-//        createCube(gl, newX, newY, newZ)
+        val newZ = (z % depth - depth / 2f) * 2f
+//        drawCube(gl, newX, newY, newZ, data(x)(y)(z))
+        prepare(gl, newX, newY, newZ)
+        createCube(gl, newX, newY, newZ)
       }
     }
-//    gl.glVertexPointer(3, GL_FLOAT, 20, indicesBuf)
-//    gl.glDrawElements(GL2.GL_POLYGON, 3, GL_FLOAT, indicesBuf)
   }
 
-  def drawCube(gl: GL2, x: Float, y: Float, z: Float, color: Byte = 0) = {
-    gl.glLoadIdentity()
-    val colorAm = Array(color % 2, color % 3 % 2, 1.0f, 1.0f)
-    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
-
-    gl.glRotatef(20, 0, 0, 0)
-
-    gl.glTranslatef(x, y, z)
-    val l_length = 1.0f
-    val l_height = 1.0f
-    val l_width = 1.0f
-    gl.glBegin(GL_QUADS)
+  def vertexArray(x: Float, y: Float, z: Float, blockSize: Float = 1f) = {
+    Array(x-blockSize, y-blockSize, z+blockSize,
+    x+blockSize, y-blockSize, z+blockSize,
+    x+blockSize, y+blockSize, z+blockSize,
+    x-blockSize, y+blockSize, z+blockSize,
+    x+blockSize, y-blockSize, z-blockSize,
+    x-blockSize, y-blockSize, z-blockSize,
+    x-blockSize, y+blockSize, z-blockSize,
+    x+blockSize, y+blockSize, z-blockSize)
+  }
 
 
-    gl.glColor3f(0.0f, 1.0f, 0.0f)
-    gl.glNormal3f(0.0f, 0.0f, -1.0f)
-    gl.glVertex3f(l_length, -l_height, -l_width)
-    gl.glVertex3f(-l_length, -l_height, -l_width)
-    gl.glVertex3f(-l_length, l_height, -l_width)
-    gl.glVertex3f(l_length, l_height, -l_width)
+  def prepare(gl: GL2, x: Float, y: Float, z: Float) {
+    vertexByteBuffer = ByteBuffer.allocateDirect(8 * 3 * 4)
+    indexByteBuffer = ByteBuffer.allocateDirect(12 * 3 * 4)
+    val blockSize = 1f
 
-    gl.glColor3f(1.0f, 0.5f, 0.0f)
-    gl.glNormal3f(0.0f, 0.0f, 1.0f)
-    gl.glVertex3f(-l_length, -l_height, l_width)
-    gl.glVertex3f(l_length, -l_height, l_width)
-    gl.glVertex3f(l_length, l_height, l_width)
-    gl.glVertex3f(-l_length, l_height, l_width)
+    vertexByteBuffer.order(ByteOrder.nativeOrder());  // <-- this line was missing
 
-    gl.glColor3f(1.0f, 0.0f, 0.0f)
-    gl.glNormal3f(1.0f, 0.0f, 0.0f)
-    gl.glVertex3f(l_length, -l_height, l_width)
-    gl.glVertex3f(l_length, -l_height, -l_width)
-    gl.glVertex3f(l_length, l_height, -l_width)
-    gl.glVertex3f(l_length, l_height, l_width)
+    val vertexBuffer = vertexByteBuffer.asFloatBuffer()
 
-    gl.glColor3f(1.0f, 1.0f, 0.0f)
-    gl.glNormal3f(-1.0f, 0.0f, 0.0f)
-    gl.glVertex3f(-l_length, -l_height, -l_width)
-    gl.glVertex3f(-l_length, -l_height, l_width)
-    gl.glVertex3f(-l_length, l_height, l_width)
-    gl.glVertex3f(-l_length, l_height, -l_width)
+    indexByteBuffer.order(ByteOrder.nativeOrder());  // <- this line was missing
+    val indexBuffer = indexByteBuffer.asIntBuffer()
 
-    gl.glColor3f(0.0f, 0.0f, 1.0f)
-    gl.glNormal3f(0.0f, -1.0f, 0.0f)
-    gl.glVertex3f(-l_length, -l_height, -l_width)
-    gl.glVertex3f(l_length, -l_height, -l_width)
-    gl.glVertex3f(l_length, -l_height, l_width)
-    gl.glVertex3f(-l_length, -l_height, l_width)
-
-    gl.glColor3f(1.0f, 0.0f, 1.0f)
-    gl.glNormal3f(0.0f, 1.0f, 0.0f)
-    gl.glVertex3f(l_length, l_height, -l_width)
-    gl.glVertex3f(-l_length, l_height, -l_width)
-    gl.glVertex3f(-l_length, l_height, l_width)
-    gl.glVertex3f(l_length, l_height, l_width)
+    normalByteBuffer.order(ByteOrder.nativeOrder());  // <- this line was missing
+    val normalBuffer = normalByteBuffer.asFloatBuffer()
 
 
+    vertexBuffer.put(vertexArray(x, y, z, blockSize))
 
-    gl.glEnd()
+    //front
+    val n1 = Array(0.0f, 0.0f, 1.0f)
+    normalBuffer.put(n1)
+    normalBuffer.put(n1)
+
+    indexBuffer.put(Array(0, 1, 2))
+    indexBuffer.put(Array(0, 2, 3))
+
+    //    back
+    val n2 = Array(0.0f, 0.0f, -1.0f)
+    indexBuffer.put(Array(4, 5, 6))
+    indexBuffer.put(Array(4, 6, 7))
+    normalBuffer.put(n2)
+    normalBuffer.put(n2)
+    //right
+    val n3 = Array(1.0f, 0.0f, 0.0f)
+    indexBuffer.put(Array(1, 4, 7))
+    indexBuffer.put(Array(1, 7, 2))
+
+    normalBuffer.put(n3)
+    normalBuffer.put(n3)
+    //left
+    val n4 = Array(-1.0f, 0.0f, 0.0f)
+    indexBuffer.put(Array(5, 0, 3))
+    indexBuffer.put(Array(5, 3, 6))
+
+    normalBuffer.put(n4)
+    normalBuffer.put(n4)
+
+    //top
+    val n5 = Array(-1.0f, 0.0f, 0.0f)
+    indexBuffer.put(Array(3, 2, 7))
+    indexBuffer.put(Array(3, 7, 6))
+    normalBuffer.put(n5)
+    normalBuffer.put(n5)
+
+//    //bottom
+    val n6 = Array(0.0f, -1.0f, 0.0f)
+    indexBuffer.put(Array(5, 4, 1))
+    indexBuffer.put(Array(5, 1, 0))
+
+    normalBuffer.put(n6)
+    normalBuffer.put(n6)
   }
 
   def createCube(gl: GL2, x: Float, y: Float, z: Float) {
-    val blockSize = 1f
-    val p1 = Array(x-blockSize, y-blockSize, z+blockSize)
-    val p2 = Array(x+blockSize, y-blockSize, z+blockSize)
-    val p3 = Array(x+blockSize, y+blockSize, z+blockSize)
-    val p4 = Array(x-blockSize, y+blockSize, z+blockSize)
-    val p5 = Array(x+blockSize, y-blockSize, z-blockSize)
-    val p6 = Array(x-blockSize, y-blockSize, z-blockSize)
-    val p7 = Array(x-blockSize, y+blockSize, z-blockSize)
-    val p8 = Array(x+blockSize, y+blockSize, z-blockSize)
-//    indicesBuf.put(p1)
-//    indicesBuf.put(p2)
-//    indicesBuf.put(p3)
-//    indicesBuf.put(p1)
-//    indicesBuf.put(p3)
-//    indicesBuf.put(p4)
-//    indicesBuf.put(p5)
-//    indicesBuf.put(p6)
-//    indicesBuf.put(p7)
-//    indicesBuf.put(p5)
-//    indicesBuf.put(p7)
-//    indicesBuf.put(p8)
-//    indicesBuf.put(p2)
-//    indicesBuf.put(p5)
-//    indicesBuf.put(p8)
-//    indicesBuf.put(p2)
-//    indicesBuf.put(p6)
-//    indicesBuf.put(p3)
-//    indicesBuf.put(p6)
-//    indicesBuf.put(p1)
-//    indicesBuf.put(p4)
-//    indicesBuf.put(p6)
-//    indicesBuf.put(p4)
-//    indicesBuf.put(p7)
-//    indicesBuf.put(p4)
-//    indicesBuf.put(p3)
-//    indicesBuf.put(p8)
-//    indicesBuf.put(p4)
-//    indicesBuf.put(p8)
-//    indicesBuf.put(p7)
-//    indicesBuf.put(p6)
-//    indicesBuf.put(p5)
-//    indicesBuf.put(p2)
-//    indicesBuf.put(p6)
-//    indicesBuf.put(p2)
-//    indicesBuf.put(p1)
+//    gl.glDrawElements(GL_TRIANGLES, 1000, GL_UNSIGNED_SHORT, 0)
+    gl.glLoadIdentity()
+    val colorAm = Array(1, 0, 0, 1.0f)
+    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
+    gl.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
+    gl.glVertexPointer(3, GL_FLOAT, 0, vertexByteBuffer.asFloatBuffer())
+    gl.glEnableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
+    gl.glNormalPointer(GL_FLOAT, 0, normalByteBuffer.asFloatBuffer())
+    gl.glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, indexByteBuffer)
+    gl.glDisableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
+    gl.glDisableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
+
   }
 }

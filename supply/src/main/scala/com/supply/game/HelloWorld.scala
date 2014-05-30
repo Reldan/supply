@@ -13,6 +13,8 @@ import javax.media.opengl.fixedfunc.GLLightingFunc._
 import javax.media.opengl.fixedfunc.GLMatrixFunc._
 import javax.media.opengl.GL2GL3._
 
+import javax.media.opengl.GL2
+
 // GL constants
 
 class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
@@ -41,15 +43,15 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glDepthFunc(GL_LEQUAL)
     gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     gl.glShadeModel(GL_SMOOTH)
-       val mat_specular = Array(1.0f, 1.0f, 1.0f, 1.0f)
-    val mat_shininess = Array(50.0f)
-    val light_position = Array(50.0f, 1.0f, 1.0f, 1.0f)
+    val mat_specular = Array(1.0f, 1.0f, 1.0f, 1.0f)
+    val mat_shininess = Array(250.0f)
+    val light_position = Array(10f, 0.0f, 0.0f, 100.0f)
 
-    val light_diffuse = Array(1.0f, 1.0f, 0.0f, 1.0f)
+//    val light_diffuse = Array(1.0f, 1.0f, 0.0f, 1.0f)
 
     gl.glMaterialfv(GL_LIGHT0, GL_SHININESS, mat_shininess, 0)
     gl.glLightfv( GL_LIGHT0, GL_POSITION, light_position, 0 )
-    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  light_diffuse, 0 )
+//    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  light_diffuse, 0 )
     gl.glLightfv( GL_LIGHT0, GL_AMBIENT,  mat_specular, 0 )
     gl.glLightfv( GL_LIGHT0, GL_SPECULAR, mat_specular, 0 )
     gl.glEnable( GL_LIGHTING )
@@ -68,7 +70,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glMatrixMode(GL_PROJECTION)
     gl.glLoadIdentity()
     glu.gluPerspective(90.0, aspect, 0.1, 500.0)
-
+    glu.gluLookAt(0, 50, 0, 0, 0, 0, 1, 0, 0)
     gl.glMatrixMode(GL_MODELVIEW)
     gl.glLoadIdentity()
   }
@@ -79,6 +81,17 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
   def display(drawable: GLAutoDrawable) {
     val gl: GL2 = drawable.getGL.getGL2
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    gl.glLoadIdentity()
+//    gl.glTranslatef(0, 0, 0)
+
+    gl.glBegin (GL_LINES);
+    gl.glVertex3f(0f, 0f, 0f);
+    gl.glVertex3f(0f, 0f, 1000f);
+    gl.glVertex3f(0f, 0f, 0f);
+    gl.glVertex3f(0f, 1000f, 0f);
+    gl.glVertex3f(0f, 0f, 0f);
+    gl.glVertex3f(1000f, 0f, 0f)
+    gl.glEnd()
     chunk.render(gl)
 //
 //    angleCube += speedCube
