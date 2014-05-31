@@ -20,8 +20,6 @@ import javax.media.opengl.GL2
 class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
 
   private var glu: GLU = null
-  private var angleCube: Float = 0
-  private var speedCube: Float = -1.5f
   private val chunk = new Chunk(16, 16, 16)
   chunk.transform()
 //  val vertex = new VertexArray()
@@ -82,20 +80,16 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     val gl: GL2 = drawable.getGL.getGL2
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     gl.glLoadIdentity()
-//    gl.glTranslatef(0, 0, 0)
 
-    gl.glBegin (GL_LINES);
-    gl.glVertex3f(0f, 0f, 0f);
-    gl.glVertex3f(0f, 0f, 1000f);
-    gl.glVertex3f(0f, 0f, 0f);
-    gl.glVertex3f(0f, 1000f, 0f);
-    gl.glVertex3f(0f, 0f, 0f);
+    gl.glBegin (GL_LINES)
+    gl.glVertex3f(0f, 0f, 0f)
+    gl.glVertex3f(0f, 0f, 1000f)
+    gl.glVertex3f(0f, 0f, 0f)
+    gl.glVertex3f(0f, 1000f, 0f)
+    gl.glVertex3f(0f, 0f, 0f)
     gl.glVertex3f(1000f, 0f, 0f)
     gl.glEnd()
     chunk.render(gl)
-//
-//    angleCube += speedCube
-//    vertex.draw(gl)
   }
 
   /**
@@ -104,13 +98,15 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
   def dispose(drawable: GLAutoDrawable) {}
 
 
-  override def keyTyped(e: KeyEvent): Unit = {}
-
-  override def keyPressed(e: KeyEvent): Unit = {
+  override def keyTyped(e: KeyEvent): Unit = {
     if (e.getKeyChar == 'r') {
       chunk.transform()
     }
-    else if (e.getKeyChar == 's') {
+  }
+
+
+  override def keyPressed(e: KeyEvent): Unit = {
+    if (e.getKeyChar == 's') {
     }
     else if (e.getKeyCode == KeyEvent.VK_ESCAPE) {
       System.exit(0)
