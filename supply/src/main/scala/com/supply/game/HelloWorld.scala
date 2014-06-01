@@ -18,16 +18,23 @@ import com.supply.game.chunk.{ChunkManager, Chunk}
 
 // GL constants
 
-class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
+class Rotate3D extends GLCanvas with GLEventListener with KeyListener with MouseListener with MouseMotionListener {
 
   private var glu: GLU = null
   private val chunkManager = new ChunkManager
   var mode = 0
+  var xCam = 0
+  var yCam = 50
+  var zCam = 0
+  var widthB = 0
+  var heightB = 0
 //  val vertex = new VertexArray()
 
   /** Constructor to setup the GUI for this Component */
   addGLEventListener(this)
   addKeyListener(this)
+  addMouseListener(this)
+  addMouseMotionListener(this)
 
   /**
    * Called back immediately after the OpenGL context is initialized. Can be used
@@ -60,6 +67,16 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
 //    vertex.init(gl)
   }
 
+  def camera(gl: GL2) {
+    val aspect = widthB.asInstanceOf[Float] / heightB
+    gl.glViewport(0, 0, widthB, if (heightB == 0) 1 else heightB)
+    gl.glMatrixMode(GL_PROJECTION)
+    gl.glLoadIdentity()
+    glu.gluPerspective(90.0, aspect, 0.1, 500.0)
+    glu.gluLookAt(xCam, yCam, zCam, 0, 0, 0, 1, 0, 0)
+    gl.glMatrixMode(GL_MODELVIEW)
+    gl.glLoadIdentity()
+  }
 
   /**
    * Call-back handler for window re-size event. Also called when the drawable is
@@ -67,12 +84,14 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
    */
   def reshape(drawable: GLAutoDrawable, x: Int, y: Int, width: Int, height: Int) {
     val gl: GL2 = drawable.getGL.getGL2
-    val aspect: Float = width.asInstanceOf[Float] / height
+    this.widthB = width
+    this.heightB = height
+    val aspect = width.asInstanceOf[Float] / height
     gl.glViewport(0, 0, width, if (height == 0) 1 else height)
     gl.glMatrixMode(GL_PROJECTION)
     gl.glLoadIdentity()
     glu.gluPerspective(90.0, aspect, 0.1, 500.0)
-    glu.gluLookAt(0, 50, 0, 0, 0, 0, 1, 0, 0)
+    glu.gluLookAt(xCam, yCam, zCam, 0, 0, 0, 0, 0, 0)
     gl.glMatrixMode(GL_MODELVIEW)
     gl.glLoadIdentity()
   }
@@ -82,6 +101,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
    */
   def display(drawable: GLAutoDrawable) {
     val gl = drawable.getGL.getGL2
+
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     gl.glLoadIdentity()
 
@@ -93,6 +113,8 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glVertex3f(0f, 0f, 0f)
     gl.glVertex3f(1000f, 0f, 0f)
     gl.glEnd()
+        camera(gl)
+
     if (mode == 1) {
       gl.glPolygonMode(GL_FRONT_AND_BACK, GL_POINT)
     } else if (mode == 2) {
@@ -126,6 +148,27 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
   }
 
   override def keyReleased(e: KeyEvent): Unit = {}
+
+  def mouseClicked(e: MouseEvent): Unit = {}
+
+  def mousePressed(e: MouseEvent): Unit = {}
+
+  def mouseReleased(e: MouseEvent): Unit = {}
+
+  def mouseEntered(e: MouseEvent): Unit = {
+    println("huj")
+  }
+
+  def mouseExited(e: MouseEvent): Unit = {
+    println("huj2")
+  }
+
+  def mouseDragged(e: MouseEvent): Unit = {
+    xCam = e.getX
+    yCam = e.getY
+  }
+
+  def mouseMoved(e: MouseEvent): Unit = {}
 }
 
 object HelloWorld extends App {

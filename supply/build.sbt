@@ -18,4 +18,5 @@ val sp = "natives-" + os + "-" + arch
 libraryDependencies ++= Seq("org.jogamp.jogl" % "jogl-all" % vers classifier sp,
 "org.jogamp.jogl" % "jogl-all" % vers,
 "org.jogamp.gluegen" % "gluegen-rt" % vers classifier sp,
-"org.jogamp.gluegen" % "gluegen-rt" % vers)
+"org.jogamp.gluegen" % "gluegen-rt" % vers,
+"org.scalatest" % "scalatest_2.10" % "2.0" % "test")
