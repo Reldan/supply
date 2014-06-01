@@ -14,14 +14,15 @@ import javax.media.opengl.fixedfunc.GLMatrixFunc._
 import javax.media.opengl.GL2GL3._
 
 import javax.media.opengl.GL2
+import com.supply.game.chunk.{ChunkManager, Chunk}
 
 // GL constants
 
 class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
 
   private var glu: GLU = null
-  private val chunk = new Chunk(16, 16, 16)
-  chunk.transform()
+  private val chunkManager = new ChunkManager
+  var mode = 0
 //  val vertex = new VertexArray()
 
   /** Constructor to setup the GUI for this Component */
@@ -42,20 +43,23 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     gl.glShadeModel(GL_SMOOTH)
     val mat_specular = Array(1.0f, 1.0f, 1.0f, 1.0f)
-    val mat_shininess = Array(250.0f)
+//    val mat_shininess = Array(250.0f)
     val light_position = Array(10f, 0.0f, 0.0f, 100.0f)
 
-//    val light_diffuse = Array(1.0f, 1.0f, 0.0f, 1.0f)
+    val light_diffuse = Array(1.0f, 1.0f, 0.0f, 1.0f)
 
-    gl.glMaterialfv(GL_LIGHT0, GL_SHININESS, mat_shininess, 0)
+//    gl.glMaterialfv(GL_LIGHT0, GL_SHININESS, mat_shininess, 0)
     gl.glLightfv( GL_LIGHT0, GL_POSITION, light_position, 0 )
-//    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  light_diffuse, 0 )
+    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  light_diffuse, 0 )
     gl.glLightfv( GL_LIGHT0, GL_AMBIENT,  mat_specular, 0 )
-    gl.glLightfv( GL_LIGHT0, GL_SPECULAR, mat_specular, 0 )
+//    gl.glLightfv( GL_LIGHT0, GL_SPECULAR, mat_specular, 0 )
     gl.glEnable( GL_LIGHTING )
     gl.glEnable( GL_LIGHT0 )
+//    gl.glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ); // call glColorMaterial before enabling GL_COLOR_MATERIAL
+//    gl.glEnable( GL_COLOR_MATERIAL )
 //    vertex.init(gl)
   }
+
 
   /**
    * Call-back handler for window re-size event. Also called when the drawable is
@@ -77,7 +81,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
    * Called back by the animator to perform rendering.
    */
   def display(drawable: GLAutoDrawable) {
-    val gl: GL2 = drawable.getGL.getGL2
+    val gl = drawable.getGL.getGL2
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     gl.glLoadIdentity()
 
@@ -89,7 +93,14 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
     gl.glVertex3f(0f, 0f, 0f)
     gl.glVertex3f(1000f, 0f, 0f)
     gl.glEnd()
-    chunk.render(gl)
+    if (mode == 1) {
+      gl.glPolygonMode(GL_FRONT_AND_BACK, GL_POINT)
+    } else if (mode == 2) {
+      gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    } else {
+      gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    }
+    chunkManager.render(gl)
   }
 
   /**
@@ -100,13 +111,14 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener {
 
   override def keyTyped(e: KeyEvent): Unit = {
     if (e.getKeyChar == 'r') {
-      chunk.transform()
+      chunkManager.loadChunks()
     }
   }
 
 
   override def keyPressed(e: KeyEvent): Unit = {
     if (e.getKeyChar == 's') {
+      mode = (mode + 1) % 3
     }
     else if (e.getKeyCode == KeyEvent.VK_ESCAPE) {
       System.exit(0)

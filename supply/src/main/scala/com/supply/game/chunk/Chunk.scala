@@ -1,4 +1,4 @@
-package com.supply.game
+package com.supply.game.chunk
 
 import scala.util.Random
 import javax.media.opengl.fixedfunc.GLPointerFunc
@@ -19,21 +19,26 @@ class Chunk(width: Int, height: Int, depth: Int) {
   var vertexByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 6 * 8 * 3 * 4)
   var indexByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 12 * 3 * 4)
   var normalByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 12 * 3 * 4)
+//  var colorByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 6 * 8 * 3 * 4)
   var vertexBuffer = vertexByteBuffer.asFloatBuffer()
   var indexBuffer = indexByteBuffer.asIntBuffer()
   var normalBuffer = normalByteBuffer.asFloatBuffer()
+//  var colorBuffer = colorByteBuffer.asFloatBuffer()
+
   transform()
 
   private def setBuffers() = {
     vertexByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 6 * 8 * 3 * 4)
     indexByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 12 * 3 * 4)
     normalByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 12 * 3 * 4)
+//    colorByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 6 * 8 * 3 * 4)
     vertexByteBuffer.order(ByteOrder.nativeOrder())
     indexByteBuffer.order(ByteOrder.nativeOrder())
     normalByteBuffer.order(ByteOrder.nativeOrder())
     vertexBuffer = vertexByteBuffer.asFloatBuffer()
     indexBuffer = indexByteBuffer.asIntBuffer()
     normalBuffer = normalByteBuffer.asFloatBuffer()
+//    colorBuffer = colorByteBuffer.asFloatBuffer()
   }
 
 
@@ -63,6 +68,22 @@ class Chunk(width: Int, height: Int, depth: Int) {
           val newZ = (z % depth - depth / 2f) * 2f
           prepare(newX, newY, newZ, i)
           i += 1
+//         colorBuffer.put(1)
+//         colorBuffer.put(0)
+//         colorBuffer.put(0)
+//         colorBuffer.put(0)
+//         colorBuffer.put(1)
+//         colorBuffer.put(0)
+//         colorBuffer.put(1)
+//         colorBuffer.put(1)
+//         colorBuffer.put(1)
+//         colorBuffer.put(0)
+//         colorBuffer.put(0)
+//         colorBuffer.put(0)
+//         colorBuffer.put(1)
+//         colorBuffer.put(0)
+//         colorBuffer.put(1)
+//         colorBuffer.put(1)
         }
     }
     created = true
@@ -70,8 +91,8 @@ class Chunk(width: Int, height: Int, depth: Int) {
 
   def render(gl: GL2) = {
     gl.glLoadIdentity()
-    val colorAm = Array(1, 0, 0, 1.0f)
-    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
+//    val colorAm = Array(1, 0, 0, 1.0f)
+//    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
     gl.glTranslatef(0, 0, 0)
     if (created)
       createCube(gl)
@@ -153,13 +174,16 @@ class Chunk(width: Int, height: Int, depth: Int) {
   def createCube(gl: GL2) {
 //    gl.glDrawElements(GL_TRIANGLES, 1000, GL_UNSIGNED_SHORT, 0)
     gl.glLoadIdentity()
-    val colorAm = Array(1, 0, 0, 1.0f)
-    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
+//    val colorAm = Array(1, 1, 1, 1.0f)
+//    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
     gl.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
     gl.glVertexPointer(3, GL_FLOAT, 0, vertexByteBuffer.asFloatBuffer())
     gl.glEnableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
     gl.glNormalPointer(GL_FLOAT, 0, normalByteBuffer.asFloatBuffer())
+//    gl.glEnableClientState(GLPointerFunc.GL_COLOR_ARRAY)
+//    gl.glColorPointer(4 , GL_FLOAT, 0, colorByteBuffer.asFloatBuffer())
     gl.glDrawElements(GL_TRIANGLES, 36 * filledBoxesCount, GL_UNSIGNED_INT, indexByteBuffer)
+//    gl.glDisableClientState(GLPointerFunc.GL_COLOR_ARRAY)
     gl.glDisableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
     gl.glDisableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
 
