@@ -2,13 +2,10 @@ package com.supply.game.render
 
 import java.nio.{ByteOrder, ByteBuffer}
 
-/**
- * Created by reldan on 01/06/14.
- */
-class ChunkRenderer(filledBoxesCount: Int) {
-  val vertexesCount = filledBoxesCount * 6 * 8 * 3 * 4
+class ChunkRenderer(renderedBoxesCount: Int) {
+  val vertexesCount = renderedBoxesCount * 6 * 8 * 3 * 4
   var vertexByteBuffer = ByteBuffer.allocateDirect(vertexesCount)
-  var indexByteBuffer = ByteBuffer.allocateDirect(filledBoxesCount * 12 * 3 * 4)
+  var indexByteBuffer = ByteBuffer.allocateDirect(renderedBoxesCount * 12 * 3 * 4)
   var normalByteBuffer = ByteBuffer.allocateDirect(vertexesCount)
   var colorByteBuffer = ByteBuffer.allocateDirect(vertexesCount)
   vertexByteBuffer.order(ByteOrder.nativeOrder())
@@ -27,8 +24,6 @@ class ChunkRenderer(filledBoxesCount: Int) {
     require(color.size == 4)
     require(!finished)
     val position = vertexBuffer.position()
-    println(position)
-
     vertexBuffer.put(point)
     normalBuffer.put(normal)
     colorBuffer.put(color)

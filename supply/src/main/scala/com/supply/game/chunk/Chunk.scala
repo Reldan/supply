@@ -7,6 +7,7 @@ import javax.media.opengl.fixedfunc.GLLightingFunc._
 
 import javax.media.opengl._
 import com.supply.game.render.ChunkRenderer
+import scala.annotation.tailrec
 
 object ChunkType {
   val grass = Array(0f, 1f, 0f, 1f)
@@ -15,7 +16,6 @@ object ChunkType {
   val stone = Array(0.4f, 0.4f, 0.4f, 1f)
   val wood = Array(1f, 0.4f, 0.4f, 1f)
   val sand = Array(1f, 0f, 1f, 1f)
-
   val types = Array(grass, dirt, water, stone, wood, sand)
 
 
@@ -36,7 +36,48 @@ class Chunk(width: Int, height: Int, depth: Int) {
   var renderer = new ChunkRenderer(1)
 
   var filledBoxesCount = 0
+  var renderedBoxesCount = 0
   transform()
+
+  private def nearBoxes(x: Int, y: Int, z: Int) = {
+    for (xd ← -1 to 1;
+         yd ← -1 to 1;
+         zd ← -1 to 1) yield data(x + xd)(y + yd)(z + zd)
+  }
+
+  private def renderBox(x: Int, y: Int, z: Int) = {
+    data(x)(y)(z) != 0 && (x == 0 || x == width - 1 || y > 0 || y < height - 1 || z > 0 || z < depth - 1 || nearBoxes(x, y, z).exists(_ > 0))
+  }
+
+  def renderedBoxesCalculate = {
+    var i = 0
+    for (x ← 0 until width;
+         y ← 0 until height;
+         z ← 0 until depth) {
+      if (renderBox(x, y, z))
+         i += 1
+      }
+    i
+  }
+
+  @tailrec
+  final def deleteBox() {
+    if (filledBoxesCount > 0) {
+      val x = rnd.nextInt(width)
+      val y = rnd.nextInt(height)
+      val z = rnd.nextInt(depth)
+      if (data(x)(y)(z) != 0) {
+        data(x)(y)(z) = 0.toByte
+        filledBoxesCount -= 1
+        renderedBoxesCount = renderedBoxesCalculate
+        renderer = new ChunkRenderer(renderedBoxesCount)
+        prepareBoxes()
+      }
+      else {
+        deleteBox()
+      }
+    }
+  }
 
 
   def transform() = {
@@ -49,35 +90,20 @@ class Chunk(width: Int, height: Int, depth: Int) {
         filledBoxesCount += 1
       }
     }
-    renderer = new ChunkRenderer(filledBoxesCount)
     prepareBoxes()
   }
 
   def prepareBoxes() {
+     renderedBoxesCount = renderedBoxesCalculate
+     renderer = new ChunkRenderer(renderedBoxesCount)
      for (x ← 0 until width;
           y ← 0 until height;
           z ← 0 until depth) {
-       if (data(x)(y)(z) != 0) {
+       if (renderBox(x, y, z)) {
           val newX = (x % width - width / 2) * 2f
           val newY = (y % height - height / 2) * 2f
           val newZ = (z % depth - depth / 2f) * 2f
           prepare(newX, newY, newZ, ChunkType.getColor(data(x)(y)(z)))
-//         colorBuffer.put(1)
-//         colorBuffer.put(0)
-//         colorBuffer.put(0)
-//         colorBuffer.put(0)
-//         colorBuffer.put(1)
-//         colorBuffer.put(0)
-//         colorBuffer.put(1)
-//         colorBuffer.put(1)
-//         colorBuffer.put(1)
-//         colorBuffer.put(0)
-//         colorBuffer.put(0)
-//         colorBuffer.put(0)
-//         colorBuffer.put(1)
-//         colorBuffer.put(0)
-//         colorBuffer.put(1)
-//         colorBuffer.put(1)
         }
     }
     renderer.finish()
@@ -85,11 +111,8 @@ class Chunk(width: Int, height: Int, depth: Int) {
 
   def render(gl: GL2) = {
     gl.glLoadIdentity()
-//    val colorAm = Array(1, 0, 0, 1.0f)
-//    gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
     gl.glTranslatef(0, 0, 0)
     if (renderer.finished) {
-      //    gl.glDrawElements(GL_TRIANGLES, 1000, GL_UNSIGNED_SHORT, 0)
       gl.glLoadIdentity()
       val colorAm = Array(1, 1, 1, 0.5f)
       gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
@@ -99,14 +122,12 @@ class Chunk(width: Int, height: Int, depth: Int) {
       gl.glNormalPointer(GL_FLOAT, 0, renderer.normalByteBuffer.asFloatBuffer())
       gl.glEnableClientState(GLPointerFunc.GL_COLOR_ARRAY)
       gl.glColorPointer(4 , GL_FLOAT, 0, renderer.colorByteBuffer.asFloatBuffer())
-      gl.glDrawElements(GL_TRIANGLES, 36 * filledBoxesCount, GL_UNSIGNED_INT, renderer.indexByteBuffer)
+      gl.glDrawElements(GL_TRIANGLES, 36 * renderedBoxesCount, GL_UNSIGNED_INT, renderer.indexByteBuffer)
       gl.glDisableClientState(GLPointerFunc.GL_COLOR_ARRAY)
       gl.glDisableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
       gl.glDisableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
     }
   }
-
-//  def
 
   private def prepare(x: Float, y: Float, z: Float, color: Array[Float]) {
     val blockSize = 1f

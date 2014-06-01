@@ -49,11 +49,11 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
     gl.glDepthFunc(GL_LEQUAL)
     gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     gl.glShadeModel(GL_SMOOTH)
-    val mat_specular = Array(1.0f, 1.0f, 1.0f, 1.0f)
+    val mat_specular = Array(0.5f, 0.5f, 0.5f, 1.0f)
     val mat_shininess = Array(250.0f)
     val light_position = Array(10f, 0.0f, 0.0f, 100.0f)
 
-    val light_diffuse = Array(1.0f, 1.0f, 0.0f, 1.0f)
+    val light_diffuse = Array(0.3f, 0.3f, 0.3f, 1.0f)
 
     gl.glMaterialfv(GL_LIGHT0, GL_SHININESS, mat_shininess, 0)
     gl.glLightfv( GL_LIGHT0, GL_POSITION, light_position, 0 )
@@ -62,8 +62,8 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
 //    gl.glLightfv( GL_LIGHT0, GL_SPECULAR, mat_specular, 0 )
     gl.glEnable( GL_LIGHTING )
     gl.glEnable( GL_LIGHT0 )
-    gl.glMaterialfv(GL_FRONT, GL_EMISSION, Array(0,0,0,0f),0);
-    gl.glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ); // call glColorMaterial before enabling GL_COLOR_MATERIAL
+    gl.glMaterialfv(GL_FRONT, GL_EMISSION, Array(0,0,0,0f),0)
+//    gl.glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ); // call glColorMaterial before enabling GL_COLOR_MATERIAL
     gl.glEnable( GL_COLOR_MATERIAL )
 //    vertex.init(gl)
   }
@@ -140,8 +140,12 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
 
 
   override def keyPressed(e: KeyEvent): Unit = {
+    println("pr")
     if (e.getKeyChar == 's') {
       mode = (mode + 1) % 3
+    }
+    else if (e.getKeyChar == 'd') {
+      chunkManager.delete()
     }
     else if (e.getKeyCode == KeyEvent.VK_ESCAPE) {
       System.exit(0)
@@ -157,11 +161,9 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
   def mouseReleased(e: MouseEvent): Unit = {}
 
   def mouseEntered(e: MouseEvent): Unit = {
-    println("huj")
   }
 
   def mouseExited(e: MouseEvent): Unit = {
-    println("huj2")
   }
 
   def mouseDragged(e: MouseEvent): Unit = {
@@ -169,7 +171,9 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
     yCam = e.getY
   }
 
-  def mouseMoved(e: MouseEvent): Unit = {}
+  def mouseMoved(e: MouseEvent): Unit = {
+    chunkManager.delete()
+  }
 }
 
 object HelloWorld extends App {
