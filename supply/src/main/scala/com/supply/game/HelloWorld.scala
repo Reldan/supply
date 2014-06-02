@@ -138,6 +138,9 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
     if (e.getKeyChar == 's') {
       mode = (mode + 1) % 3
     }
+    else if (e.getKeyChar == 'w') {
+      chunkManager.terrain()
+    }
     else if (e.getKeyChar == 'd') {
       chunkManager.delete()
     }

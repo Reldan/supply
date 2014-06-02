@@ -8,7 +8,7 @@ import com.supply.game.render.NoiseGen
 import scala.util.Random
 
 class ChunkManager {
-  val chunkSize = 60
+  val chunkSize = 80
 
   var chunks = List(Chunk.create(chunkSize, chunkSize, chunkSize))
 
@@ -69,7 +69,8 @@ class ChunkManager {
           println(gen.get(px, pz))
          Range(0, (Math.abs(gen.get(px, pz) / 2)  * chunkSize).toInt).foreach
           { y ⇒
-             data(x)(y)(z) = (Math.abs(gen.get(px, y.toDouble / chunkSize, pz) / 3 * 7) + 1).toByte
+//             data(x)(y)(z) = (Math.abs(gen.get(px, y.toDouble / chunkSize, pz) / 3 * 7) + 1).toByte
+             data(x)(y)(z) = (y * 6 / chunkSize + 1).toByte
           }
     }
     chunks = List(new Chunk(data))

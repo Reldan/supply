@@ -11,22 +11,32 @@ import scala.annotation.tailrec
 
 object BoxType {
   val Empty: Byte = 0
-  val Grass: Byte = 1
-  val Water: Byte = 2
-  val Stone: Byte = 3
-  val Wood:  Byte = 4
-  val Sand:  Byte = 5
-  val Dirt:  Byte = 6
+  val Water: Byte = 1
+  val Sand:  Byte = 2
+  val Dirt:  Byte = 3
+  val Grass: Byte = 4
+  val Stone: Byte = 5
+  val Wood:  Byte = 6
+
   private val rnd = new Random()
 
-  private val boxColor = Map(
-    Grass → Array(0f, 1f, 0f, 1f),
-    Water → Array(0f, 0f, 1f, 1f),
-    Stone → Array(0.4f, 0.4f, 0.4f, 1f),
-    Wood  → Array(1f, 0.4f, 0.4f, 1f),
-    Sand  → Array(1f, 0f, 1f, 1f),
-    Dirt  → Array(1f, 1f, 0f, 1f)
-  )
+//  private val boxColor = Map(
+//    Grass → Array(0f, 1f, 0f, 1f),
+//    Water → Array(0f, 0f, 1f, 1f),
+//    Stone → Array(0.4f, 0.4f, 0.4f, 1f),
+//    Wood  → Array(1f, 0.4f, 0.4f, 1f),
+//    Sand  → Array(1f, 0f, 1f, 1f),
+//    Dirt  → Array(1f, 1f, 0f, 1f)
+//  )
+
+  private val boxColor: Map[Byte, Array[Float]] = Map(
+    Grass → Array(19, 136, 8, 255),
+    Water → Array(0, 127, 255, 255),
+    Stone → Array(132, 132, 130, 255),
+    Wood  → Array(205, 127, 50, 255),
+    Sand  → Array(236, 213, 64, 255),
+    Dirt  → Array(101, 67, 33, 255)
+  ).map(el ⇒ el._1 → el._2.map(_.toFloat / 255))
 
   def getColor(i: Byte) = {
     require(i > 0)
@@ -34,15 +44,15 @@ object BoxType {
   }
 
   def isValidType(i: Byte) = {
-    i >= 0 && i <= Dirt
+    i >= 0 && i <= Wood
   }
 
   def getRandomBoxType() = {
-    rnd.nextInt(Dirt + 1).toByte
+    rnd.nextInt(Wood + 1).toByte
   }
 
   def getRandomNonEmptyType(): Byte = {
-    rnd.nextInt(Dirt) + 1
+    rnd.nextInt(Wood) + 1
   }.toByte
 }
 
