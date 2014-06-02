@@ -9,35 +9,61 @@ import javax.media.opengl._
 import com.supply.game.render.ChunkRenderer
 import scala.annotation.tailrec
 
-object ChunkType {
-  val grass = Array(0f, 1f, 0f, 1f)
-  val dirt = Array(1f, 1f, 0f, 1f)
-  val water = Array(0f, 0f, 1f, 1f)
-  val stone = Array(0.4f, 0.4f, 0.4f, 1f)
-  val wood = Array(1f, 0.4f, 0.4f, 1f)
-  val sand = Array(1f, 0f, 1f, 1f)
-  val types = Array(grass, dirt, water, stone, wood, sand)
+object BoxType {
+  val Empty: Byte = 0
+  val Grass: Byte = 1
+  val Water: Byte = 2
+  val Stone: Byte = 3
+  val Wood:  Byte = 4
+  val Sand:  Byte = 5
+  val Dirt:  Byte = 6
+  private val rnd = new Random()
 
+  private val boxColor = Map(
+    Grass → Array(0f, 1f, 0f, 1f),
+    Water → Array(0f, 0f, 1f, 1f),
+    Stone → Array(0.4f, 0.4f, 0.4f, 1f),
+    Wood  → Array(1f, 0.4f, 0.4f, 1f),
+    Sand  → Array(1f, 0f, 1f, 1f),
+    Dirt  → Array(1f, 1f, 0f, 1f)
+  )
 
-  def getColor(i: Int) = {
+  def getColor(i: Byte) = {
     require(i > 0)
-    require(i < types.size)
-    types(i - 1)
+    boxColor(i)
   }
+
+  def isValidType(i: Byte) = {
+    i >= 0 && i <= Dirt
+  }
+
+  def getRandomBoxType() = {
+    rnd.nextInt(Dirt + 1).toByte
+  }
+
+  def getRandomNonEmptyType(): Byte = {
+    rnd.nextInt(Dirt) + 1
+  }.toByte
+}
+
+object Chunk{
+  def create(width: Int, height: Int, depth: Int) =
+    new Chunk(Array.fill(width, height, depth)(0.toByte))
 }
 
 
-class Chunk(width: Int, height: Int, depth: Int) {
-  val data = Array.fill(width, height, depth)(0.toByte)
+class Chunk(data:Array[Array[Array[Byte]]]) {
+  val width = data.length
+  val height = data(0).length
+  val depth = data(0)(0).length
+//  var boxType = new Array[Byte](height * width)
+  var changed = true
 
-  var boxType = new Array[Byte](height * width)
-  val rnd = new Random()
   //grass, dirt, water, stone, wood, sand
   var renderer = new ChunkRenderer(1)
 
   var filledBoxesCount = 0
   var renderedBoxesCount = 0
-  transform()
 
   private def nearBoxes(x: Int, y: Int, z: Int) = {
     for (xd ← -1 to 1;
@@ -60,40 +86,57 @@ class Chunk(width: Int, height: Int, depth: Int) {
     i
   }
 
-  @tailrec
-  final def deleteBox() {
-    if (filledBoxesCount > 0) {
-      val x = rnd.nextInt(width)
-      val y = rnd.nextInt(height)
-      val z = rnd.nextInt(depth)
-      if (data(x)(y)(z) != 0) {
-        data(x)(y)(z) = 0.toByte
-        filledBoxesCount -= 1
-        renderedBoxesCount = renderedBoxesCalculate
-        renderer = new ChunkRenderer(renderedBoxesCount)
-        prepareBoxes()
-      }
-      else {
-        deleteBox()
-      }
-    }
+//  @tailrec
+//  final def deleteBox() {
+//    if (filledBoxesCount > 0) {
+//      val x = rnd.nextInt(width)
+//      val y = rnd.nextInt(height)
+//      val z = rnd.nextInt(depth)
+//      if (data(x)(y)(z) != 0) {
+//        data(x)(y)(z) = 0.toByte
+//        filledBoxesCount -= 1
+//        renderedBoxesCount = renderedBoxesCalculate
+//        renderer = new ChunkRenderer(renderedBoxesCount)
+//        prepareBoxes()
+//      }
+//      else {
+//        deleteBox()
+//      }
+//    }
+//  }
+
+
+  /**
+   * Place box to chunk
+   * @param x x coord
+   * @param y y coord
+   * @param z z coord
+   * @param boxType type of chunk from ChunkType
+   */
+  def addBox(x: Int, y: Int, z: Int, boxType: Byte) {
+    require(BoxType.isValidType(boxType))
+    if (boxType == BoxType.Empty && data(x)(y)(z) != BoxType.Empty)
+      filledBoxesCount -= 1
+    else if (boxType != BoxType.Empty && data(x)(y)(z) == BoxType.Empty)
+      filledBoxesCount += 1
+    data(x)(y)(z) = boxType
   }
 
 
-  def transform() = {
-    filledBoxesCount = 0
-    for (x ← 0 until width;
-         y ← 0 until height;
-         z ← 0 until depth) {
-      data(x)(y)(z) = rnd.nextInt(ChunkType.types.size).toByte
-      if (data(x)(y)(z) != 0) {
-        filledBoxesCount += 1
-      }
-    }
-    prepareBoxes()
-  }
+//  def transform() = {
+//    filledBoxesCount = 0
+//    for (x ← 0 until width;
+//         y ← 0 until height;
+//         z ← 0 until depth) {
+//      data(x)(y)(z) = BoxType.getRandomBoxType()
+//      if (data(x)(y)(z) != 0) {
+//        filledBoxesCount += 1
+//      }
+//    }
+//    prepareBoxes()
+//  }
 
-  def prepareBoxes() {
+  private def prepareBoxes() {
      renderedBoxesCount = renderedBoxesCalculate
      renderer = new ChunkRenderer(renderedBoxesCount)
      for (x ← 0 until width;
@@ -103,16 +146,19 @@ class Chunk(width: Int, height: Int, depth: Int) {
           val newX = (x % width - width / 2) * 2f
           val newY = (y % height - height / 2) * 2f
           val newZ = (z % depth - depth / 2f) * 2f
-          prepare(newX, newY, newZ, ChunkType.getColor(data(x)(y)(z)))
+          renderer.addBox(newX, newY, newZ, BoxType.getColor(data(x)(y)(z)))
         }
     }
     renderer.finish()
+    changed = false
   }
 
   def render(gl: GL2) = {
-    gl.glLoadIdentity()
-    gl.glTranslatef(0, 0, 0)
-    if (renderer.finished) {
+    if (changed)
+      prepareBoxes()
+    if (renderer.finished && renderedBoxesCount > 0) {
+      gl.glLoadIdentity()
+      gl.glTranslatef(0, 0, 0)
       gl.glLoadIdentity()
       val colorAm = Array(1, 1, 1, 0.5f)
       gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
@@ -129,86 +175,4 @@ class Chunk(width: Int, height: Int, depth: Int) {
     }
   }
 
-  private def prepare(x: Float, y: Float, z: Float, color: Array[Float]) {
-    val blockSize = 1f
-
-    val p1 = Array(x - blockSize, y - blockSize, z + blockSize)
-    val p2 = Array(x + blockSize, y - blockSize, z + blockSize)
-    val p3 = Array(x + blockSize, y + blockSize, z + blockSize)
-    val p4 = Array(x - blockSize, y + blockSize, z + blockSize)
-    val p5 = Array(x + blockSize, y - blockSize, z - blockSize)
-    val p6 = Array(x - blockSize, y - blockSize, z - blockSize)
-    val p7 = Array(x - blockSize, y + blockSize, z - blockSize)
-    val p8 = Array(x + blockSize, y + blockSize, z - blockSize)
-
-    //front
-    val n1 = Array(0.0f, 0.0f, 1.0f)
-    var v1 = renderer.addVertex(p1, n1, color)
-    var v2 = renderer.addVertex(p2, n1, color)
-    var v3 = renderer.addVertex(p3, n1, color)
-    var v4 = renderer.addVertex(p4, n1, color)
-
-    renderer.addTriangle(v1, v2, v3)
-    renderer.addTriangle(v1, v3, v4)
-
-    //    back
-    val n2 = Array(0.0f, 0.0f, -1.0f)
-
-    var v5 = renderer.addVertex(p5, n2, color)
-    var v6 = renderer.addVertex(p6, n2, color)
-    var v7 = renderer.addVertex(p7, n2, color)
-    var v8 = renderer.addVertex(p8, n2, color)
-
-    renderer.addTriangle(v5, v6, v7)
-    renderer.addTriangle(v5, v7, v8)
-
-    //right
-    val n3 = Array(1.0f, 0.0f, 0.0f)
-
-    v2 = renderer.addVertex(p2, n3, color)
-    v5 = renderer.addVertex(p5, n3, color)
-    v8 = renderer.addVertex(p8, n3, color)
-    v3 = renderer.addVertex(p3, n3, color)
-
-    renderer.addTriangle(v2, v5, v8)
-    renderer.addTriangle(v2, v8, v3)
-
-    //left
-    val n4 = Array(-1.0f, 0.0f, 0.0f)
-
-    v6 = renderer.addVertex(p6, n4, color)
-    v1 = renderer.addVertex(p1, n4, color)
-    v4 = renderer.addVertex(p4, n4, color)
-    v7 = renderer.addVertex(p7, n4, color)
-
-    renderer.addTriangle(v6, v1, v4)
-    renderer.addTriangle(v6, v4, v7)
-
-    //top
-    val n5 = Array(-1.0f, 0.0f, 0.0f)
-
-    v4 = renderer.addVertex(p4, n5, color)
-    v3 = renderer.addVertex(p3, n5, color)
-    v8 = renderer.addVertex(p8, n5, color)
-    v7 = renderer.addVertex(p7, n5, color)
-
-    renderer.addTriangle(v4, v3, v8)
-    renderer.addTriangle(v4, v8, v7)
-
-    //bottom
-    val n6 = Array(0.0f, -1.0f, 0.0f)
-
-    v6 = renderer.addVertex(p6, n6, color)
-    v5 = renderer.addVertex(p5, n6, color)
-    v2 = renderer.addVertex(p2, n6, color)
-    v1 = renderer.addVertex(p1, n6, color)
-
-    renderer.addTriangle(v6, v5, v2)
-    renderer.addTriangle(v6, v2, v1)
-  }
-
-  def createCube(gl: GL2) {
-
-
-  }
 }

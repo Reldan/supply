@@ -28,6 +28,8 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
   var zCam = 0
   var widthB = 0
   var heightB = 0
+
+  chunkManager.sphere()
 //  val vertex = new VertexArray()
 
   /** Constructor to setup the GUI for this Component */
