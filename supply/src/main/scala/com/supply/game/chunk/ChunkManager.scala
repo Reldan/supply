@@ -53,20 +53,23 @@ class ChunkManager {
     val gen: ModuleFractal = new ModuleFractal()
     gen.setAllSourceBasisTypes(BasisType.GRADIENT)
     gen.setAllSourceInterpolationTypes(InterpolationType.CUBIC)
-    gen.setNumOctaves(2)
+    gen.setNumOctaves(5)
     gen.setFrequency(0.34)
-    gen.setGain(0.5)
-    gen.setType(FractalType.FBM)
+//    gen.setGain(0.5)
+    gen.setType(FractalType.BILLOW)
     gen.setSeed(new Random().nextInt(1000))
 //    val gen = new NoiseGen().gen()
     val data = Array.fill(chunkSize, chunkSize, chunkSize)(0.toByte)
     for (x ← 0 until chunkSize;
          z ← 0 until chunkSize
          ) {
-          println(gen.get(x, z))
-         Range(0, (Math.abs(gen.get(x, z) / 4)  * chunkSize).toInt).foreach
+
+        val px = x.toDouble / chunkSize
+        val pz = z.toDouble / chunkSize
+          println(gen.get(px, pz))
+         Range(0, (Math.abs(gen.get(px, pz) / 2)  * chunkSize).toInt).foreach
           { y ⇒
-             data(x)(y)(z) = (Math.abs(gen.get(x, y, z) * 7) + 1).toByte
+             data(x)(y)(z) = (Math.abs(gen.get(px, y.toDouble / chunkSize, pz) / 3 * 7) + 1).toByte
           }
     }
     chunks = List(new Chunk(data))
