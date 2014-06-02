@@ -29,8 +29,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
   var widthB = 0
   var heightB = 0
 
-  chunkManager.sphere()
-//  val vertex = new VertexArray()
+  chunkManager.terrain()
 
   /** Constructor to setup the GUI for this Component */
   addGLEventListener(this)
@@ -89,14 +88,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
     val gl: GL2 = drawable.getGL.getGL2
     this.widthB = width
     this.heightB = height
-    val aspect = width.asInstanceOf[Float] / height
-    gl.glViewport(0, 0, width, if (height == 0) 1 else height)
-    gl.glMatrixMode(GL_PROJECTION)
-    gl.glLoadIdentity()
-    glu.gluPerspective(90.0, aspect, 0.1, 500.0)
-    glu.gluLookAt(xCam, yCam, zCam, 0, 0, 0, 0, 0, 0)
-    gl.glMatrixMode(GL_MODELVIEW)
-    gl.glLoadIdentity()
+    camera(gl)
   }
 
   /**

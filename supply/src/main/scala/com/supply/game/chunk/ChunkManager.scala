@@ -1,9 +1,14 @@
 package com.supply.game.chunk
 
 import javax.media.opengl.GL2
+import com.sudoplay.joise.module.ModuleFractal
+import com.sudoplay.joise.module.ModuleBasisFunction.{InterpolationType, BasisType}
+import com.sudoplay.joise.module.ModuleFractal.FractalType
+import com.supply.game.render.NoiseGen
+import scala.util.Random
 
 class ChunkManager {
-  val chunkSize = 20
+  val chunkSize = 60
 
   var chunks = List(Chunk.create(chunkSize, chunkSize, chunkSize))
 
@@ -43,5 +48,29 @@ class ChunkManager {
     }
     chunks = List(new Chunk(data))
   }
+
+  def terrain() = {
+    val gen: ModuleFractal = new ModuleFractal()
+    gen.setAllSourceBasisTypes(BasisType.GRADIENT)
+    gen.setAllSourceInterpolationTypes(InterpolationType.CUBIC)
+    gen.setNumOctaves(2)
+    gen.setFrequency(0.34)
+    gen.setGain(0.5)
+    gen.setType(FractalType.FBM)
+    gen.setSeed(new Random().nextInt(1000))
+//    val gen = new NoiseGen().gen()
+    val data = Array.fill(chunkSize, chunkSize, chunkSize)(0.toByte)
+    for (x ← 0 until chunkSize;
+         z ← 0 until chunkSize
+         ) {
+          println(gen.get(x, z))
+         Range(0, (Math.abs(gen.get(x, z) / 4)  * chunkSize).toInt).foreach
+          { y ⇒
+             data(x)(y)(z) = (Math.abs(gen.get(x, y, z) * 7) + 1).toByte
+          }
+    }
+    chunks = List(new Chunk(data))
+  }
+
 
 }
