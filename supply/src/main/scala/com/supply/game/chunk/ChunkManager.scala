@@ -7,7 +7,7 @@ import com.sudoplay.joise.module.ModuleFractal.FractalType
 import scala.util.Random
 
 class ChunkManager {
-  val chunkSize = 2
+  val chunkSize = 200
 
   var chunks = List(Chunk.create(chunkSize, chunkSize, chunkSize))
 

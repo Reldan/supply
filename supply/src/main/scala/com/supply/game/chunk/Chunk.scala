@@ -51,6 +51,11 @@ object BoxType {
 object Chunk{
   def create(width: Int, height: Int, depth: Int) =
     new Chunk(Array.fill(width, height, depth)(0.toByte))
+
+  def countTriangles(data:Array[Array[Array[Byte]]], x: Int, y: Int, z: Int) = {
+    var count = 36
+
+  }
 }
 
 
@@ -63,18 +68,31 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
 
   var filledBoxesCount = 0
   var renderedBoxesCount = 0
+  var renderedTrianglesCount = 0
 
-  private def nearBoxes(x: Int, y: Int, z: Int) = {
-    for (xd ← -1 to 1;
-         yd ← -1 to 1;
-         zd ← -1 to 1) yield data(x + xd)(y + yd)(z + zd)
-  }
+  private def nearFilledBoxes(x: Int, y: Int, z: Int) =
+    Array((x - 1, y, z), (x + 1, y, z), (x, y - 1, z), (x, y + 1, z), (x, y, z - 1), (x, y, z + 1)).map {
+      case(nx, ny, nz) if nx > 0 && nx < width && ny > 0 && ny < height && nz > 0 && nz < depth ⇒
+        data(nx)(ny)(nz) != BoxType.Empty
+      case _ ⇒ false
+    }
 
   private def renderBox(x: Int, y: Int, z: Int) = {
-    data(x)(y)(z) != 0 && (x == 0 || x == width - 1 || y == 0 || y == height - 1 || z == 0 || z == depth - 1 || nearBoxes(x, y, z).exists(_ == 0))
+    data(x)(y)(z) != 0 && (x == 0 || x == width - 1 || y == 0 || y == height - 1 || z == 0 || z == depth - 1 || nearFilledBoxes(x, y, z).exists(el ⇒ !el))
   }
 
   def renderedBoxesCalculate = {
+    var i = 0
+    for (x ← 0 until width;
+         y ← 0 until height;
+         z ← 0 until depth) {
+      if (renderBox(x, y, z))
+         i += 1
+      }
+    i
+  }
+
+  def renderedTrianglesCalculate = {
     var i = 0
     for (x ← 0 until width;
          y ← 0 until height;
@@ -111,7 +129,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
           val newX = (x % width - width / 2) * 2f
           val newY = (y % height - height / 2) * 2f
           val newZ = (z % depth - depth / 2f) * 2f
-          renderer.addBox(newX, newY, newZ, BoxType.getColor(data(x)(y)(z)))
+          renderer.addBox(newX, newY, newZ, BoxType.getColor(data(x)(y)(z)), nearFilledBoxes(x, y, z))
         }
     }
     renderer.finish()

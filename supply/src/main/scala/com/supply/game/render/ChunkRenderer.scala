@@ -42,7 +42,7 @@ class ChunkRenderer(renderedBoxesCount: Int) {
     finished = true
   }
 
-  def addBox(x: Float, y: Float, z: Float, color: Array[Float]) = {
+  def addBox(x: Float, y: Float, z: Float, color: Array[Float], boxes: IndexedSeq[Boolean]) = {
     val blockSize = 1f
 
     val p1 = Array(x - blockSize, y - blockSize, z + blockSize)
