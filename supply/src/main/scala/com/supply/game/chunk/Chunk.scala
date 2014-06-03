@@ -52,10 +52,7 @@ object Chunk{
   def create(width: Int, height: Int, depth: Int) =
     new Chunk(Array.fill(width, height, depth)(0.toByte))
 
-  def countTriangles(data:Array[Array[Array[Byte]]], x: Int, y: Int, z: Int) = {
-    var count = 36
 
-  }
 }
 
 
@@ -70,9 +67,13 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   var renderedBoxesCount = 0
   var renderedTrianglesCount = 0
 
+  def countTriangles(x: Int, y: Int, z: Int) = {
+    12 - nearFilledBoxes(x, y, z).count(el ⇒ el) * 2
+  }
+
   private def nearFilledBoxes(x: Int, y: Int, z: Int) =
     Array((x - 1, y, z), (x + 1, y, z), (x, y - 1, z), (x, y + 1, z), (x, y, z - 1), (x, y, z + 1)).map {
-      case(nx, ny, nz) if nx > 0 && nx < width && ny > 0 && ny < height && nz > 0 && nz < depth ⇒
+      case(nx, ny, nz) if nx >= 0 && nx < width && ny >= 0 && ny < height && nz >= 0 && nz < depth ⇒
         data(nx)(ny)(nz) != BoxType.Empty
       case _ ⇒ false
     }
@@ -97,9 +98,8 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
     for (x ← 0 until width;
          y ← 0 until height;
          z ← 0 until depth) {
-      if (renderBox(x, y, z))
-         i += 1
-      }
+         i += countTriangles(x, y, z)
+       }
     i
   }
 

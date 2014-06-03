@@ -75,7 +75,11 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
     gl.glMatrixMode(GL_PROJECTION)
     gl.glLoadIdentity()
     glu.gluPerspective(90.0, aspect, 0.1, 500.0)
-    glu.gluLookAt(xCam, yCam, zCam, 0, 0, 0, 1, 0, 0)
+    gl.glTranslatef(0, 0, -400)
+    gl.glRotatef(xCam, 1, 0, 0)
+    gl.glRotatef(yCam, 0, 1, 0)
+
+//    glu.gluLookAt(0, 0, 100, 0, 0, 0, 1, 0, 0)
     gl.glMatrixMode(GL_MODELVIEW)
     gl.glLoadIdentity()
   }

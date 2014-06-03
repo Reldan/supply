@@ -42,6 +42,25 @@ class ChunkRenderer(renderedBoxesCount: Int) {
     finished = true
   }
 
+
+  def addSquare(sq: SquareData) {
+    val v1 = addVertex(sq.p1, sq.n, sq.color)
+    val v2 = addVertex(sq.p2, sq.n, sq.color)
+    val v3 = addVertex(sq.p3, sq.n, sq.color)
+    val v4 = addVertex(sq.p4, sq.n, sq.color)
+
+    addTriangle(v1, v2, v3)
+    addTriangle(v1, v3, v4)
+  }
+
+  case class SquareData(
+    p1: Array[Float],
+    p2: Array[Float],
+    p3: Array[Float],
+    p4: Array[Float],
+    n: Array[Float],
+    color: Array[Float])
+
   def addBox(x: Float, y: Float, z: Float, color: Array[Float], boxes: IndexedSeq[Boolean]) = {
     val blockSize = 1f
 
@@ -55,68 +74,19 @@ class ChunkRenderer(renderedBoxesCount: Int) {
     val p8 = Array(x + blockSize, y + blockSize, z - blockSize)
 
     //front
-    val n1 = Array(0.0f, 0.0f, 1.0f)
-    var v1 = addVertex(p1, n1, color)
-    var v2 = addVertex(p2, n1, color)
-    var v3 = addVertex(p3, n1, color)
-    var v4 = addVertex(p4, n1, color)
+    val squares = Array(
+      SquareData(p6, p1, p4, p7, Array(-1.0f, 0.0f, 0.0f), color),
+      SquareData(p2, p5, p8, p3, Array(1.0f, 0.0f, 0.0f), color),
+      SquareData(p6, p5, p2, p1, Array(0.0f, -1.0f, 0.0f), color),
+      SquareData(p4, p3, p8, p7, Array(0.0f, 1.0f, 0.0f), color),
+      SquareData(p5, p6, p7, p8, Array(0.0f, 0.0f, -1.0f), color),
+      SquareData(p1, p2, p3, p4, Array(0.0f, 0.0f, 1.0f), color)
+    )
 
-    addTriangle(v1, v2, v3)
-    addTriangle(v1, v3, v4)
+    Range(0, squares.size).foreach {
+      i ⇒ if (!boxes(i)) addSquare(squares(i))
+    }
 
-    //    back
-    val n2 = Array(0.0f, 0.0f, -1.0f)
-
-    var v5 = addVertex(p5, n2, color)
-    var v6 = addVertex(p6, n2, color)
-    var v7 = addVertex(p7, n2, color)
-    var v8 = addVertex(p8, n2, color)
-
-    addTriangle(v5, v6, v7)
-    addTriangle(v5, v7, v8)
-
-    //right
-    val n3 = Array(1.0f, 0.0f, 0.0f)
-
-    v2 = addVertex(p2, n3, color)
-    v5 = addVertex(p5, n3, color)
-    v8 = addVertex(p8, n3, color)
-    v3 = addVertex(p3, n3, color)
-
-    addTriangle(v2, v5, v8)
-    addTriangle(v2, v8, v3)
-
-    //left
-    val n4 = Array(-1.0f, 0.0f, 0.0f)
-
-    v6 = addVertex(p6, n4, color)
-    v4 = addVertex(p4, n4, color)
-    v7 = addVertex(p7, n4, color)
-
-    addTriangle(v6, v1, v4)
-    addTriangle(v6, v4, v7)
-
-    //top
-    val n5 = Array(-1.0f, 0.0f, 0.0f)
-
-    v4 = addVertex(p4, n5, color)
-    v3 = addVertex(p3, n5, color)
-    v8 = addVertex(p8, n5, color)
-    v7 = addVertex(p7, n5, color)
-
-    addTriangle(v4, v3, v8)
-    addTriangle(v4, v8, v7)
-
-    //bottom
-    val n6 = Array(0.0f, -1.0f, 0.0f)
-
-    v6 = addVertex(p6, n6, color)
-    v5 = addVertex(p5, n6, color)
-    v2 = addVertex(p2, n6, color)
-    v1 = addVertex(p1, n6, color)
-
-    addTriangle(v6, v5, v2)
-    addTriangle(v6, v2, v1)
   }
 
 }
