@@ -20,14 +20,6 @@ object BoxType {
 
   private val rnd = new Random()
 
-//  private val boxColor = Map(
-//    Grass → Array(0f, 1f, 0f, 1f),
-//    Water → Array(0f, 0f, 1f, 1f),
-//    Stone → Array(0.4f, 0.4f, 0.4f, 1f),
-//    Wood  → Array(1f, 0.4f, 0.4f, 1f),
-//    Sand  → Array(1f, 0f, 1f, 1f),
-//    Dirt  → Array(1f, 1f, 0f, 1f)
-//  )
 
   private val boxColor: Map[Byte, Array[Float]] = Map(
     Grass → Array(19, 136, 8, 255),
@@ -66,10 +58,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   val width = data.length
   val height = data(0).length
   val depth = data(0)(0).length
-//  var boxType = new Array[Byte](height * width)
   var changed = true
-
-  //grass, dirt, water, stone, wood, sand
   var renderer = new ChunkRenderer(1)
 
   var filledBoxesCount = 0
@@ -82,7 +71,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   }
 
   private def renderBox(x: Int, y: Int, z: Int) = {
-    data(x)(y)(z) != 0 && (x == 0 || x == width - 1 || y > 0 || y < height - 1 || z > 0 || z < depth - 1 || nearBoxes(x, y, z).exists(_ > 0))
+    data(x)(y)(z) != 0 && (x == 0 || x == width - 1 || y == 0 || y == height - 1 || z == 0 || z == depth - 1 || nearBoxes(x, y, z).exists(_ == 0))
   }
 
   def renderedBoxesCalculate = {
@@ -95,26 +84,6 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
       }
     i
   }
-
-//  @tailrec
-//  final def deleteBox() {
-//    if (filledBoxesCount > 0) {
-//      val x = rnd.nextInt(width)
-//      val y = rnd.nextInt(height)
-//      val z = rnd.nextInt(depth)
-//      if (data(x)(y)(z) != 0) {
-//        data(x)(y)(z) = 0.toByte
-//        filledBoxesCount -= 1
-//        renderedBoxesCount = renderedBoxesCalculate
-//        renderer = new ChunkRenderer(renderedBoxesCount)
-//        prepareBoxes()
-//      }
-//      else {
-//        deleteBox()
-//      }
-//    }
-//  }
-
 
   /**
    * Place box to chunk
@@ -131,20 +100,6 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
       filledBoxesCount += 1
     data(x)(y)(z) = boxType
   }
-
-
-//  def transform() = {
-//    filledBoxesCount = 0
-//    for (x ← 0 until width;
-//         y ← 0 until height;
-//         z ← 0 until depth) {
-//      data(x)(y)(z) = BoxType.getRandomBoxType()
-//      if (data(x)(y)(z) != 0) {
-//        filledBoxesCount += 1
-//      }
-//    }
-//    prepareBoxes()
-//  }
 
   private def prepareBoxes() {
      renderedBoxesCount = renderedBoxesCalculate

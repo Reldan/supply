@@ -4,11 +4,10 @@ import javax.media.opengl.GL2
 import com.sudoplay.joise.module.ModuleFractal
 import com.sudoplay.joise.module.ModuleBasisFunction.{InterpolationType, BasisType}
 import com.sudoplay.joise.module.ModuleFractal.FractalType
-import com.supply.game.render.NoiseGen
 import scala.util.Random
 
 class ChunkManager {
-  val chunkSize = 80
+  val chunkSize = 2
 
   var chunks = List(Chunk.create(chunkSize, chunkSize, chunkSize))
 
@@ -29,7 +28,7 @@ class ChunkManager {
     for (x ← 0 until chunkSize;
          y ← 0 until chunkSize;
          z ← 0 until chunkSize) {
-      data(x)(y)(z) = BoxType.getRandomBoxType()
+      data(x)(y)(z) = BoxType.getRandomNonEmptyType()
     }
     chunks = List(new Chunk(data))
   }
@@ -66,7 +65,6 @@ class ChunkManager {
 
         val px = x.toDouble / chunkSize
         val pz = z.toDouble / chunkSize
-          println(gen.get(px, pz))
          Range(0, (Math.abs(gen.get(px, pz) / 2)  * chunkSize).toInt).foreach
           { y ⇒
 //             data(x)(y)(z) = (Math.abs(gen.get(px, y.toDouble / chunkSize, pz) / 3 * 7) + 1).toByte

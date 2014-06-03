@@ -29,7 +29,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
   var widthB = 0
   var heightB = 0
 
-  chunkManager.terrain()
+  chunkManager.random()
 
   /** Constructor to setup the GUI for this Component */
   addGLEventListener(this)
@@ -127,9 +127,6 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
 
 
   override def keyTyped(e: KeyEvent): Unit = {
-    if (e.getKeyChar == 'r') {
-      chunkManager.loadChunks()
-    }
   }
 
 

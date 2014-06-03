@@ -2,6 +2,10 @@ package com.supply.game.render
 
 import java.nio.{ByteOrder, ByteBuffer}
 
+
+
+// size of triangles = renderedBoxesCount * 2 (2 triangles per square) * 6 (squares) * (3 point) * (4 size of float)
+//
 class ChunkRenderer(renderedBoxesCount: Int) {
   val vertexesCount = renderedBoxesCount * 6 * 8 * 3 * 4
   var vertexByteBuffer = ByteBuffer.allocateDirect(vertexesCount)
