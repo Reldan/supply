@@ -65,7 +65,7 @@ class ChunkManager {
 
         val px = x.toDouble / chunkSize
         val pz = z.toDouble / chunkSize
-         Range(0, (Math.abs(gen.get(px, pz) / 2)  * chunkSize).toInt).foreach
+         Range(0, chunkSize - (Math.abs(gen.get(px, pz) / 2)  * chunkSize).toInt).foreach
           { y ⇒
 //             data(x)(y)(z) = (Math.abs(gen.get(px, y.toDouble / chunkSize, pz) / 3 * 7) + 1).toByte
              data(x)(y)(z) = (y * 6 / chunkSize + 1).toByte

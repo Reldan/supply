@@ -1,12 +1,9 @@
 package com.supply.game
 
-import java.awt._
 import java.awt.event._
-import javax.swing._
-import javax.media.opengl.{GL2, GLAutoDrawable, GLEventListener}
+import javax.media.opengl.{GLAutoDrawable, GLEventListener}
 import javax.media.opengl.awt.GLCanvas
 import javax.media.opengl.glu.GLU
-import com.jogamp.opengl.util.FPSAnimator
 import javax.media.opengl.GL._
 import javax.media.opengl.GL2ES1._
 import javax.media.opengl.fixedfunc.GLLightingFunc._
@@ -14,11 +11,11 @@ import javax.media.opengl.fixedfunc.GLMatrixFunc._
 import javax.media.opengl.GL2GL3._
 
 import javax.media.opengl.GL2
-import com.supply.game.chunk.{ChunkManager, Chunk}
+import com.supply.game.chunk.ChunkManager
 
 // GL constants
 
-class Rotate3D extends GLCanvas with GLEventListener with KeyListener with MouseListener with MouseMotionListener {
+class Frame extends GLCanvas with GLEventListener with KeyListener with MouseListener with MouseMotionListener {
 
   private var glu: GLU = null
   private val chunkManager = new ChunkManager
@@ -56,7 +53,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
 
     val light_diffuse = Array(0.3f, 0.3f, 0.3f, 1.0f)
 
-    gl.glMaterialfv(GL_LIGHT0, GL_SHININESS, mat_shininess, 0)
+//    gl.glMaterialfv(GL_LIGHT0, GL_SHININESS, mat_shininess, 0)
     gl.glLightfv( GL_LIGHT0, GL_POSITION, light_position, 0 )
     gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  light_diffuse, 0 )
     gl.glLightfv( GL_LIGHT0, GL_AMBIENT,  mat_specular, 0 )
@@ -74,7 +71,7 @@ class Rotate3D extends GLCanvas with GLEventListener with KeyListener with Mouse
     gl.glViewport(0, 0, widthB, if (heightB == 0) 1 else heightB)
     gl.glMatrixMode(GL_PROJECTION)
     gl.glLoadIdentity()
-    glu.gluPerspective(90.0, aspect, 0.1, 500.0)
+    glu.gluPerspective(90.0, aspect, 0.1, 1500.0)
     gl.glTranslatef(0, 0, -400)
     gl.glRotatef(xCam, 1, 0, 0)
     gl.glRotatef(yCam, 0, 1, 0)

@@ -18,7 +18,7 @@ object Application extends App {
 
   SwingUtilities.invokeLater(new Runnable {
     def run() {
-      val canvas: GLCanvas = new Rotate3D
+      val canvas: GLCanvas = new Frame
       canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT))
       val animator: FPSAnimator = new FPSAnimator(canvas, FPS, true)
       val frame: JFrame = new JFrame
