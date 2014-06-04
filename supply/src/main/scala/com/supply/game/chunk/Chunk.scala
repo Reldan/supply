@@ -50,6 +50,23 @@ object BoxType {
 object Chunk{
   def create(width: Int, height: Int, depth: Int) =
     new Chunk(Array.fill(width, height, depth)(0.toByte))
+
+  def nearBoxes(x: Int, y: Int, z: Int, data: Array[Array[Array[Byte]]]) = {
+    val width = data.size
+    val height = data(0).size
+    val depth = data(0)(0).size
+    require(x < width)
+    require(y < height)
+    require(z < depth)
+    require(data(x)(y)(z) != BoxType.Empty)
+
+    Array((x - 1, y, z), (x + 1, y, z), (x, y - 1, z), (x, y + 1, z), (x, y, z - 1), (x, y, z + 1)).map {
+      case(nx, ny, nz) if nx >= 0 && nx < width && ny >= 0 && ny < height && nz >= 0 && nz < depth ⇒
+        data(nx)(ny)(nz) != BoxType.Empty
+      case (nx, ny, nz) ⇒
+        false
+    }
+  }
 }
 
 
@@ -65,18 +82,15 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   var renderedTrianglesCount = 0
 
   def countTriangles(x: Int, y: Int, z: Int) = {
-    12 - nearFilledBoxes(x, y, z).count(el ⇒ el) * 2
+    if (data(x)(y)(z) != BoxType.Empty)
+      Chunk.nearBoxes(x, y, z, data).count(el ⇒ !el) * 2
+    else
+      0
   }
 
-  private def nearFilledBoxes(x: Int, y: Int, z: Int) =
-    Array((x - 1, y, z), (x + 1, y, z), (x, y - 1, z), (x, y + 1, z), (x, y, z - 1), (x, y, z + 1)).map {
-      case(nx, ny, nz) if nx >= 0 && nx < width && ny >= 0 && ny < height && nz >= 0 && nz < depth ⇒
-        data(nx)(ny)(nz) != BoxType.Empty
-      case _ ⇒ false
-    }
 
   private def renderBox(x: Int, y: Int, z: Int) = {
-    data(x)(y)(z) != 0 && nearFilledBoxes(x, y, z).exists(el ⇒ !el)
+    data(x)(y)(z) != 0 && Chunk.nearBoxes(x, y, z, data).exists(el ⇒ !el)
   }
 
   def renderedBoxesCalculate = {
@@ -117,8 +131,9 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   }
 
   private def prepareBoxes() {
-     renderedBoxesCount = renderedBoxesCalculate
-     renderer = new ChunkRenderer(renderedBoxesCount)
+    renderedBoxesCount = renderedBoxesCalculate
+    renderedTrianglesCount = renderedTrianglesCalculate
+     renderer = new ChunkRenderer(renderedTrianglesCount)
      for (x ← 0 until width;
           y ← 0 until height;
           z ← 0 until depth) {
@@ -126,7 +141,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
           val newX = (x % width - width / 2) * 2f
           val newY = (y % height - height / 2) * 2f
           val newZ = (z % depth - depth / 2f) * 2f
-          renderer.addBox(newX, newY, newZ, BoxType.getColor(data(x)(y)(z)), nearFilledBoxes(x, y, z))
+          renderer.addBox(newX, newY, newZ, BoxType.getColor(data(x)(y)(z)), Chunk.nearBoxes(x, y, z, data))
         }
     }
     renderer.finish()
@@ -147,7 +162,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
       gl.glNormalPointer(GL_FLOAT, 0, renderer.normalByteBuffer.asFloatBuffer())
       gl.glEnableClientState(GLPointerFunc.GL_COLOR_ARRAY)
       gl.glColorPointer(4 , GL_FLOAT, 0, renderer.colorByteBuffer.asFloatBuffer())
-      gl.glDrawElements(GL_TRIANGLES, 35 * renderedBoxesCount, GL_UNSIGNED_INT, renderer.indexByteBuffer)
+      gl.glDrawElements(GL_TRIANGLES, 3 * renderedTrianglesCount, GL_UNSIGNED_INT, renderer.indexByteBuffer)
       gl.glDisableClientState(GLPointerFunc.GL_COLOR_ARRAY)
       gl.glDisableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
       gl.glDisableClientState(GLPointerFunc.GL_VERTEX_ARRAY)

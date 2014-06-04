@@ -14,14 +14,12 @@ object ChunkRenderer {
 }
 
 
-// size of triangles = renderedBoxesCount * 2 (2 triangles per square) * 6 (squares) * (3 point) * (4 size of float)
-//
 class ChunkRenderer(renderedBoxesCount: Int) {
-  val vertexesCount = renderedBoxesCount * 6 * 8 * 3 * 4
-  var vertexByteBuffer = ByteBuffer.allocateDirect(vertexesCount)
-  var indexByteBuffer = ByteBuffer.allocateDirect(renderedBoxesCount * 12 * 3 * 4)
-  var normalByteBuffer = ByteBuffer.allocateDirect(vertexesCount)
-  var colorByteBuffer = ByteBuffer.allocateDirect(vertexesCount)
+  val vertexesCount = renderedBoxesCount * 4 * 2
+  var vertexByteBuffer = ByteBuffer.allocateDirect(vertexesCount * 3)
+  var indexByteBuffer = ByteBuffer.allocateDirect(renderedBoxesCount * 3 * 4)
+  var normalByteBuffer = ByteBuffer.allocateDirect(vertexesCount * 3)
+  var colorByteBuffer = ByteBuffer.allocateDirect(vertexesCount * 4)
   vertexByteBuffer.order(ByteOrder.nativeOrder())
   indexByteBuffer.order(ByteOrder.nativeOrder())
   normalByteBuffer.order(ByteOrder.nativeOrder())
@@ -50,8 +48,6 @@ class ChunkRenderer(renderedBoxesCount: Int) {
 
   def finish() {
     finished = true
-    println(vertexBuffer.position())
-    println(vertexBuffer.limit())
   }
 
 

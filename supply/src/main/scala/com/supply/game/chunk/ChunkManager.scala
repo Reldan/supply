@@ -21,7 +21,7 @@ class ChunkManager(height: Int, width: Int, depth: Int = 1) {
     for (x ← 0 until width;
          y ← 0 until height;
          z ← 0 until depth) {
-      chunks(x)(y)(z).render(gl, x * offs, z * offs, y * offs)
+      chunks(x)(y)(z).render(gl, x * offs, y * offs, z * offs)
     }
   }
 

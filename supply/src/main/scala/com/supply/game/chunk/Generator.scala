@@ -40,12 +40,12 @@ object Generator {
     gen.setType(FractalType.BILLOW)
     gen.setSeed(new Random().nextInt(1000))
     val data = Array.fill(width, height, depth)(0.toByte)
-    for (x ← 0 until width; z ← 0 until depth) {
-        val px = x.toDouble / height
-        val pz = z.toDouble / depth
-         Range(0, height - (Math.abs(gen.get(px, pz) / 2)  * height).toInt).foreach
-          { y ⇒
-             data(x)(y)(z) = (y * 6 / height + 1).toByte
+    for (x ← 0 until width; y ← 0 until height) {
+        val px = x.toDouble / width
+        val py = y.toDouble / height
+         Range(0, height - (Math.abs(gen.get(px, py) / 2)  * depth).toInt).foreach
+          { z ⇒
+             data(x)(y)(z) = (z * 6 / depth + 1).toByte
           }
     }
     data

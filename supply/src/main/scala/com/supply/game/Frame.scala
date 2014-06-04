@@ -19,7 +19,7 @@ class Frame extends GLCanvas with GLEventListener with KeyListener with MouseLis
 
   val managerWidth = 15
   val managerHeight = 15
-  val managerDepth = 1
+  val managerDepth = 5
   private var glu: GLU = null
   private val chunkManager = new ChunkManager(managerWidth, managerHeight, managerDepth)
   var mode = 0
