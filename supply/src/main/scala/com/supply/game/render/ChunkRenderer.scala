@@ -14,10 +14,10 @@ object ChunkRenderer {
 }
 
 
-class ChunkRenderer(renderedBoxesCount: Int) {
-  val vertexesCount = renderedBoxesCount * 4 * 2
+class ChunkRenderer(renderedTrianglesCount: Int) {
+  val vertexesCount = renderedTrianglesCount * 4 * 2
   var vertexByteBuffer = ByteBuffer.allocateDirect(vertexesCount * 3)
-  var indexByteBuffer = ByteBuffer.allocateDirect(renderedBoxesCount * 3 * 4)
+  var indexByteBuffer = ByteBuffer.allocateDirect(renderedTrianglesCount * 3 * 4)
   var normalByteBuffer = ByteBuffer.allocateDirect(vertexesCount * 3)
   var colorByteBuffer = ByteBuffer.allocateDirect(vertexesCount * 4)
   vertexByteBuffer.order(ByteOrder.nativeOrder())

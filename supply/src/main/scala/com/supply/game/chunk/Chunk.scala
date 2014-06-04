@@ -78,7 +78,6 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   var renderer = new ChunkRenderer(1)
 
   var filledBoxesCount = 0
-  var renderedBoxesCount = 0
   var renderedTrianglesCount = 0
 
   def countTriangles(x: Int, y: Int, z: Int) = {
@@ -91,17 +90,6 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
 
   private def renderBox(x: Int, y: Int, z: Int) = {
     data(x)(y)(z) != 0 && Chunk.nearBoxes(x, y, z, data).exists(el ⇒ !el)
-  }
-
-  def renderedBoxesCalculate = {
-    var i = 0
-    for (x ← 0 until width;
-         y ← 0 until height;
-         z ← 0 until depth) {
-      if (renderBox(x, y, z))
-         i += 1
-      }
-    i
   }
 
   def renderedTrianglesCalculate = {
@@ -131,18 +119,17 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   }
 
   private def prepareBoxes() {
-    renderedBoxesCount = renderedBoxesCalculate
     renderedTrianglesCount = renderedTrianglesCalculate
-     renderer = new ChunkRenderer(renderedTrianglesCount)
-     for (x ← 0 until width;
-          y ← 0 until height;
-          z ← 0 until depth) {
-       if (renderBox(x, y, z)) {
-          val newX = (x % width - width / 2) * 2f
-          val newY = (y % height - height / 2) * 2f
-          val newZ = (z % depth - depth / 2f) * 2f
-          renderer.addBox(newX, newY, newZ, BoxType.getColor(data(x)(y)(z)), Chunk.nearBoxes(x, y, z, data))
-        }
+    renderer = new ChunkRenderer(renderedTrianglesCount)
+    for (x ← 0 until width;
+         y ← 0 until height;
+         z ← 0 until depth) {
+      if (renderBox(x, y, z)) {
+        val newX = (x % width - width / 2) * 2f
+        val newY = (y % height - height / 2) * 2f
+        val newZ = (z % depth - depth / 2f) * 2f
+        renderer.addBox(newX, newY, newZ, BoxType.getColor(data(x)(y)(z)), Chunk.nearBoxes(x, y, z, data))
+      }
     }
     renderer.finish()
     changed = false
@@ -151,7 +138,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   def render(gl: GL2, x: Int = 0, y: Int = 0, z: Int = 0) = {
     if (changed)
       prepareBoxes()
-    if (renderer.finished && renderedBoxesCount > 0) {
+    if (renderer.finished && renderedTrianglesCount > 0) {
       gl.glLoadIdentity()
       gl.glTranslatef(x, y, z)
       val colorAm = Array(1, 1, 1, 0.5f)
