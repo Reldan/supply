@@ -3,7 +3,7 @@ package com.supply.game.chunk
 import javax.media.opengl.GL2
 
 class ChunkManager(height: Int, width: Int, depth: Int = 1) {
-  val chunkSize = 50
+  val chunkSize = 16
 
 //  var chunks = List(List(Chunk.create(chunkSize, chunkSize, chunkSize)))
   var chunks = Array.fill(width, height, depth)(Chunk.create(chunkSize, chunkSize, chunkSize))

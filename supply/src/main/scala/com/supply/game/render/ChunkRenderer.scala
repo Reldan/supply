@@ -50,6 +50,8 @@ class ChunkRenderer(renderedBoxesCount: Int) {
 
   def finish() {
     finished = true
+    println(vertexBuffer.position())
+    println(vertexBuffer.limit())
   }
 
 

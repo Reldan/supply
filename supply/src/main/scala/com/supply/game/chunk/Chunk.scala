@@ -76,7 +76,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
     }
 
   private def renderBox(x: Int, y: Int, z: Int) = {
-    data(x)(y)(z) != 0 && (x == 0 || x == width - 1 || y == 0 || y == height - 1 || z == 0 || z == depth - 1 || nearFilledBoxes(x, y, z).exists(el ⇒ !el))
+    data(x)(y)(z) != 0 && nearFilledBoxes(x, y, z).exists(el ⇒ !el)
   }
 
   def renderedBoxesCalculate = {
@@ -147,7 +147,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
       gl.glNormalPointer(GL_FLOAT, 0, renderer.normalByteBuffer.asFloatBuffer())
       gl.glEnableClientState(GLPointerFunc.GL_COLOR_ARRAY)
       gl.glColorPointer(4 , GL_FLOAT, 0, renderer.colorByteBuffer.asFloatBuffer())
-      gl.glDrawElements(GL_TRIANGLES, 36 * renderedBoxesCount, GL_UNSIGNED_INT, renderer.indexByteBuffer)
+      gl.glDrawElements(GL_TRIANGLES, 35 * renderedBoxesCount, GL_UNSIGNED_INT, renderer.indexByteBuffer)
       gl.glDisableClientState(GLPointerFunc.GL_COLOR_ARRAY)
       gl.glDisableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
       gl.glDisableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
