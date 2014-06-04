@@ -136,13 +136,12 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
     changed = false
   }
 
-  def render(gl: GL2) = {
+  def render(gl: GL2, x: Int = 0, y: Int = 0, z: Int = 0) = {
     if (changed)
       prepareBoxes()
     if (renderer.finished && renderedBoxesCount > 0) {
       gl.glLoadIdentity()
-      gl.glTranslatef(0, 0, 0)
-      gl.glLoadIdentity()
+      gl.glTranslatef(x, y, z)
       val colorAm = Array(1, 1, 1, 0.5f)
       gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
       gl.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY)

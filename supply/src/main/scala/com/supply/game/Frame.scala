@@ -11,7 +11,7 @@ import javax.media.opengl.fixedfunc.GLMatrixFunc._
 import javax.media.opengl.GL2GL3._
 
 import javax.media.opengl.GL2
-import com.supply.game.chunk.ChunkManager
+import com.supply.game.chunk.{Generator, ChunkManager}
 
 // GL constants
 
@@ -26,7 +26,8 @@ class Frame extends GLCanvas with GLEventListener with KeyListener with MouseLis
   var widthB = 0
   var heightB = 0
 
-  chunkManager.terrain()
+  chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize))
+  chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize))
 
   /** Constructor to setup the GUI for this Component */
   addGLEventListener(this)
@@ -137,7 +138,7 @@ class Frame extends GLCanvas with GLEventListener with KeyListener with MouseLis
       mode = (mode + 1) % 3
     }
     else if (e.getKeyChar == 'w') {
-      chunkManager.terrain()
+      chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize))
     }
     else if (e.getKeyChar == 'd') {
       chunkManager.delete()
