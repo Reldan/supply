@@ -7,7 +7,6 @@ import javax.media.opengl.fixedfunc.GLLightingFunc._
 
 import javax.media.opengl._
 import com.supply.game.render.ChunkRenderer
-import scala.annotation.tailrec
 
 object BoxType {
   val Empty: Byte = 0
@@ -51,8 +50,6 @@ object BoxType {
 object Chunk{
   def create(width: Int, height: Int, depth: Int) =
     new Chunk(Array.fill(width, height, depth)(0.toByte))
-
-
 }
 
 

@@ -17,8 +17,11 @@ import com.supply.game.chunk.{Generator, ChunkManager}
 
 class Frame extends GLCanvas with GLEventListener with KeyListener with MouseListener with MouseMotionListener {
 
+  val managerWidth = 5
+  val managerHeight = 5
+  val managerDepth = 1
   private var glu: GLU = null
-  private val chunkManager = new ChunkManager
+  private val chunkManager = new ChunkManager(managerWidth, managerHeight, managerDepth)
   var mode = 0
   var xCam = 0
   var yCam = 50
@@ -26,8 +29,12 @@ class Frame extends GLCanvas with GLEventListener with KeyListener with MouseLis
   var widthB = 0
   var heightB = 0
 
-  chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize))
-  chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize))
+  for (x ← 0 until managerWidth;
+       y ← 0 until managerHeight;
+       z ← 0 until managerDepth) {
+    chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize), x, y, z)
+  }
+
 
   /** Constructor to setup the GUI for this Component */
   addGLEventListener(this)
@@ -138,7 +145,7 @@ class Frame extends GLCanvas with GLEventListener with KeyListener with MouseLis
       mode = (mode + 1) % 3
     }
     else if (e.getKeyChar == 'w') {
-      chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize))
+//      chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize))
     }
     else if (e.getKeyChar == 'd') {
       chunkManager.delete()

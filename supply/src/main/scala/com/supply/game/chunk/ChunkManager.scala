@@ -2,26 +2,26 @@ package com.supply.game.chunk
 
 import javax.media.opengl.GL2
 
-class ChunkManager {
+class ChunkManager(height: Int, width: Int, depth: Int = 1) {
   val chunkSize = 50
 
-  var chunks = List(Chunk.create(chunkSize, chunkSize, chunkSize))
+//  var chunks = List(List(Chunk.create(chunkSize, chunkSize, chunkSize)))
+  var chunks = Array.fill(width, height, depth)(Chunk.create(chunkSize, chunkSize, chunkSize))
 
   def loadChunks() {
-    chunks = List(Chunk.create(chunkSize, chunkSize, chunkSize))
+    chunks = Array.fill(width, height, depth)(Chunk.create(chunkSize, chunkSize, chunkSize))
   }
 
-  def loadChunk(data: Array[Array[Array[Byte]]]) = {
-    chunks ::= new Chunk(data)
+  def loadChunk(data: Array[Array[Array[Byte]]], x: Int, y: Int, z: Int) = {
+    chunks(x)(y)(z) = new Chunk(data)
   }
 
   def render(gl: GL2) {
-//    Range(0, chunks.size).foreach{
-//      i ⇒ chunks
-//    }
-    chunks.zipWithIndex.foreach{
-      case (ch, ind) ⇒
-      ch.render(gl, 0, 0, ind * 2 * chunkSize)
+    val offs = 2 * chunkSize
+    for (x ← 0 until width;
+         y ← 0 until height;
+         z ← 0 until depth) {
+      chunks(x)(y)(z).render(gl, x * offs, z * offs, y * offs)
     }
   }
 
