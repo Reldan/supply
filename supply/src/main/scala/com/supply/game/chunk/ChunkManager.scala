@@ -53,7 +53,7 @@ class ChunkManager {
     gen.setAllSourceBasisTypes(BasisType.GRADIENT)
     gen.setAllSourceInterpolationTypes(InterpolationType.CUBIC)
     gen.setNumOctaves(5)
-    gen.setFrequency(0.34)
+    gen.setFrequency(2.34)
 //    gen.setGain(0.5)
     gen.setType(FractalType.BILLOW)
     gen.setSeed(new Random().nextInt(1000))

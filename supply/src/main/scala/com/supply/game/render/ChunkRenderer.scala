@@ -3,6 +3,16 @@ package com.supply.game.render
 import java.nio.{ByteOrder, ByteBuffer}
 
 
+object ChunkRenderer {
+  val NORMALS = Array(
+    Array(-1.0f, 0.0f, 0.0f),
+    Array(1.0f, 0.0f, 0.0f),
+    Array(0.0f, -1.0f, 0.0f),
+    Array(0.0f, 1.0f, 0.0f),
+    Array(0.0f, 0.0f, -1.0f),
+    Array(0.0f, 0.0f, 1.0f))
+}
+
 
 // size of triangles = renderedBoxesCount * 2 (2 triangles per square) * 6 (squares) * (3 point) * (4 size of float)
 //
@@ -75,12 +85,12 @@ class ChunkRenderer(renderedBoxesCount: Int) {
 
     //front
     val squares = Array(
-      SquareData(p6, p1, p4, p7, Array(-1.0f, 0.0f, 0.0f), color),
-      SquareData(p2, p5, p8, p3, Array(1.0f, 0.0f, 0.0f), color),
-      SquareData(p6, p5, p2, p1, Array(0.0f, -1.0f, 0.0f), color),
-      SquareData(p4, p3, p8, p7, Array(0.0f, 1.0f, 0.0f), color),
-      SquareData(p5, p6, p7, p8, Array(0.0f, 0.0f, -1.0f), color),
-      SquareData(p1, p2, p3, p4, Array(0.0f, 0.0f, 1.0f), color)
+      SquareData(p6, p1, p4, p7, ChunkRenderer.NORMALS(0), color),
+      SquareData(p2, p5, p8, p3, ChunkRenderer.NORMALS(1), color),
+      SquareData(p6, p5, p2, p1, ChunkRenderer.NORMALS(2), color),
+      SquareData(p4, p3, p8, p7, ChunkRenderer.NORMALS(3), color),
+      SquareData(p5, p6, p7, p8, ChunkRenderer.NORMALS(4), color),
+      SquareData(p1, p2, p3, p4, ChunkRenderer.NORMALS(5), color)
     )
 
     Range(0, squares.size).foreach {
