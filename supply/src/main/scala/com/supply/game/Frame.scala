@@ -32,7 +32,7 @@ class Frame extends GLCanvas with GLEventListener with KeyListener with MouseLis
   for (x ← 0 until managerWidth;
        y ← 0 until managerHeight;
        z ← 0 until managerDepth) {
-    chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize), x, y, z)
+    chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize, x, y, z, managerWidth, managerHeight, managerDepth), x, y, z)
   }
 
 

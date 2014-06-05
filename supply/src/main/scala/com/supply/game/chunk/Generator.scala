@@ -31,22 +31,26 @@ object Generator {
     data
   }
 
-  def terrain(width: Int, height: Int, depth: Int) = {
-    val gen: ModuleFractal = new ModuleFractal()
+   val gen: ModuleFractal = new ModuleFractal()
     gen.setAllSourceBasisTypes(BasisType.GRADIENT)
     gen.setAllSourceInterpolationTypes(InterpolationType.CUBIC)
     gen.setNumOctaves(5)
-    gen.setFrequency(2.34)
+    gen.setFrequency(0.005)
     gen.setType(FractalType.BILLOW)
     gen.setSeed(new Random().nextInt(1000))
+
+  def terrain(width: Int, height: Int, depth: Int, xp: Int, yp: Int, zp: Int, totalX: Int, totalY: Int, totalZ: Int) = {
+
     val data = Array.fill(width, height, depth)(0.toByte)
     for (x ← 0 until width; y ← 0 until height) {
-        val px = x.toDouble / width
-        val py = y.toDouble / height
-         Range(0, height - (Math.abs(gen.get(px, py) / 2)  * depth).toInt).foreach
-          { z ⇒
-             data(x)(y)(z) = (z * 6 / depth + 1).toByte
-          }
+      val px = x + xp * width
+      val py = y + yp * height
+      var zz = (((1 - Math.abs(gen.get(px, py) / 2)) * totalZ - zp) * depth).toInt
+      zz = if (zz < 0) 0 else if (zz > depth) depth else zz
+       Range(0, zz).foreach
+        { z ⇒
+           data(x)(y)(z) = ((zp * depth + z ) * 6 / (totalZ * depth) + 1).toByte
+        }
     }
     data
   }
