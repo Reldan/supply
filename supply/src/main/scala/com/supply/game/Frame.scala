@@ -71,6 +71,8 @@ class Frame extends GLCanvas with GLEventListener with KeyListener with MouseLis
     gl.glMaterialfv(GL_FRONT, GL_EMISSION, Array(0,0,0,0f),0)
 //    gl.glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE ); // call glColorMaterial before enabling GL_COLOR_MATERIAL
     gl.glEnable( GL_COLOR_MATERIAL )
+    gl.glEnable(GL_BLEND); //Enable blending.
+    gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
 //    vertex.init(gl)
   }
 

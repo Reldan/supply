@@ -49,7 +49,9 @@ object Generator {
       zz = if (zz < 0) 0 else if (zz > depth) depth else zz
        Range(0, zz).foreach
         { z ⇒
-           data(x)(y)(z) = ((zp * depth + z ) * 6 / (totalZ * depth) + 1).toByte
+//          val pz = z + zp * depth
+          data(x)(y)(z) = ((zp * depth + z ) * 6 / (totalZ * depth) + 1).toByte
+//          data(x)(y)(z) = Math.abs(1).toByte
         }
     }
     data

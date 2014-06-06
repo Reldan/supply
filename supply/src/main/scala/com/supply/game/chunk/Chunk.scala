@@ -22,7 +22,7 @@ object BoxType {
 
   private val boxColor: Map[Byte, Array[Float]] = Map(
     Grass → Array(19, 136, 8, 255),
-    Water → Array(0, 127, 255, 255),
+    Water → Array(0, 127, 255, 100),
     Stone → Array(132, 132, 130, 255),
     Wood  → Array(205, 127, 50, 255),
     Sand  → Array(236, 213, 64, 255),
@@ -36,6 +36,11 @@ object BoxType {
 
   def isValidType(i: Byte) = {
     i >= 0 && i <= Wood
+  }
+
+  def isTransparent(i: Byte) = {
+//    i == Water ||
+      i == Empty
   }
 
   def getRandomBoxType() = {
@@ -62,7 +67,7 @@ object Chunk{
 
     Array((x - 1, y, z), (x + 1, y, z), (x, y - 1, z), (x, y + 1, z), (x, y, z - 1), (x, y, z + 1)).map {
       case(nx, ny, nz) if nx >= 0 && nx < width && ny >= 0 && ny < height && nz >= 0 && nz < depth ⇒
-        data(nx)(ny)(nz) != BoxType.Empty
+        !BoxType.isTransparent(data(nx)(ny)(nz))
       case (nx, ny, nz) ⇒
         false
     }
@@ -77,11 +82,10 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   var changed = true
   var renderer = new ChunkRenderer(1)
 
-  var filledBoxesCount = 0
   var renderedTrianglesCount = 0
 
   def countTriangles(x: Int, y: Int, z: Int) = {
-    if (data(x)(y)(z) != BoxType.Empty)
+    if (!BoxType.isTransparent(data(x)(y)(z)))
       Chunk.nearBoxes(x, y, z, data).count(el ⇒ !el) * 2
     else
       0
@@ -111,10 +115,6 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
    */
   def addBox(x: Int, y: Int, z: Int, boxType: Byte) {
     require(BoxType.isValidType(boxType))
-    if (boxType == BoxType.Empty && data(x)(y)(z) != BoxType.Empty)
-      filledBoxesCount -= 1
-    else if (boxType != BoxType.Empty && data(x)(y)(z) == BoxType.Empty)
-      filledBoxesCount += 1
     data(x)(y)(z) = boxType
   }
 
