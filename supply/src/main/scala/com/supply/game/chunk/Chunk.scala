@@ -1,11 +1,6 @@
 package com.supply.game.chunk
 
 import scala.util.Random
-import javax.media.opengl.fixedfunc.GLPointerFunc
-import javax.media.opengl.GL._
-import javax.media.opengl.fixedfunc.GLLightingFunc._
-
-import javax.media.opengl._
 import com.supply.game.render.ChunkRenderer
 
 object BoxType {
@@ -18,7 +13,6 @@ object BoxType {
   val Wood:  Byte = 6
 
   private val rnd = new Random()
-
 
   private val boxColor: Map[Byte, Array[Float]] = Map(
     Grass → Array(19, 136, 8, 255),
@@ -52,7 +46,7 @@ object BoxType {
   }.toByte
 }
 
-object Chunk{
+object Chunk {
   def create(width: Int, height: Int, depth: Int) =
     new Chunk(Array.fill(width, height, depth)(0.toByte))
 
@@ -68,8 +62,7 @@ object Chunk{
     Array((x - 1, y, z), (x + 1, y, z), (x, y - 1, z), (x, y + 1, z), (x, y, z - 1), (x, y, z + 1)).map {
       case(nx, ny, nz) if nx >= 0 && nx < width && ny >= 0 && ny < height && nz >= 0 && nz < depth ⇒
         !BoxType.isTransparent(data(nx)(ny)(nz))
-      case (nx, ny, nz) ⇒
-        false
+      case (nx, ny, nz) ⇒ false
     }
   }
 }
@@ -80,7 +73,7 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
   val height = data(0).length
   val depth = data(0)(0).length
   var changed = true
-  var renderer = new ChunkRenderer(1)
+  var renderer = new ChunkRenderer(this, 1)
 
   var renderedTrianglesCount = 0
 
@@ -118,9 +111,9 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
     data(x)(y)(z) = boxType
   }
 
-  private def prepareBoxes() {
+  def prepareBoxes() {
     renderedTrianglesCount = renderedTrianglesCalculate
-    renderer = new ChunkRenderer(renderedTrianglesCount)
+    renderer = new ChunkRenderer(this, renderedTrianglesCount)
     for (x ← 0 until width;
          y ← 0 until height;
          z ← 0 until depth) {
@@ -134,26 +127,4 @@ class Chunk(data:Array[Array[Array[Byte]]]) {
     renderer.finish()
     changed = false
   }
-
-  def render(gl: GL2, x: Int = 0, y: Int = 0, z: Int = 0) = {
-    if (changed)
-      prepareBoxes()
-    if (renderer.finished && renderedTrianglesCount > 0) {
-      gl.glLoadIdentity()
-      gl.glTranslatef(x, y, z)
-      val colorAm = Array(1, 1, 1, 0.5f)
-      gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
-      gl.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
-      gl.glVertexPointer(3, GL_FLOAT, 0, renderer.vertexByteBuffer.asFloatBuffer())
-      gl.glEnableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
-      gl.glNormalPointer(GL_FLOAT, 0, renderer.normalByteBuffer.asFloatBuffer())
-      gl.glEnableClientState(GLPointerFunc.GL_COLOR_ARRAY)
-      gl.glColorPointer(4 , GL_FLOAT, 0, renderer.colorByteBuffer.asFloatBuffer())
-      gl.glDrawElements(GL_TRIANGLES, 3 * renderedTrianglesCount, GL_UNSIGNED_INT, renderer.indexByteBuffer)
-      gl.glDisableClientState(GLPointerFunc.GL_COLOR_ARRAY)
-      gl.glDisableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
-      gl.glDisableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
-    }
-  }
-
 }

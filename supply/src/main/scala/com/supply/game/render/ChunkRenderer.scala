@@ -1,6 +1,11 @@
 package com.supply.game.render
 
 import java.nio.{ByteOrder, ByteBuffer}
+import com.supply.game.chunk.Chunk
+import javax.media.opengl.GL2
+import javax.media.opengl.fixedfunc.GLLightingFunc._
+import javax.media.opengl.fixedfunc.GLPointerFunc
+import javax.media.opengl.GL._
 
 
 object ChunkRenderer {
@@ -14,7 +19,7 @@ object ChunkRenderer {
 }
 
 
-class ChunkRenderer(renderedTrianglesCount: Int) {
+class ChunkRenderer(chunk: Chunk, renderedTrianglesCount: Int) {
   val vertexesCount = renderedTrianglesCount * 4 * 2
   var vertexByteBuffer = ByteBuffer.allocateDirect(vertexesCount * 3)
   var indexByteBuffer = ByteBuffer.allocateDirect(renderedTrianglesCount * 3 * 4)
@@ -49,7 +54,6 @@ class ChunkRenderer(renderedTrianglesCount: Int) {
   def finish() {
     finished = true
   }
-
 
   def addSquare(sq: SquareData) {
     val v1 = addVertex(sq.p1, sq.n, sq.color)
@@ -94,7 +98,27 @@ class ChunkRenderer(renderedTrianglesCount: Int) {
     Range(0, squares.size).foreach {
       i ⇒ if (!boxes(i)) addSquare(squares(i))
     }
+  }
 
+  def render(gl: GL2, x: Int = 0, y: Int = 0, z: Int = 0) = {
+    if (chunk.changed)
+      chunk.prepareBoxes()
+    if (finished && renderedTrianglesCount > 0) {
+      gl.glLoadIdentity()
+      gl.glTranslatef(x, y, z)
+      val colorAm = Array(1, 1, 1, 0.5f)
+      gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
+      gl.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
+      gl.glVertexPointer(3, GL_FLOAT, 0, vertexByteBuffer.asFloatBuffer())
+      gl.glEnableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
+      gl.glNormalPointer(GL_FLOAT, 0, normalByteBuffer.asFloatBuffer())
+      gl.glEnableClientState(GLPointerFunc.GL_COLOR_ARRAY)
+      gl.glColorPointer(4 , GL_FLOAT, 0, colorByteBuffer.asFloatBuffer())
+      gl.glDrawElements(GL_TRIANGLES, 3 * renderedTrianglesCount, GL_UNSIGNED_INT, indexByteBuffer)
+      gl.glDisableClientState(GLPointerFunc.GL_COLOR_ARRAY)
+      gl.glDisableClientState(GLPointerFunc.GL_NORMAL_ARRAY)
+      gl.glDisableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
+    }
   }
 
 }
