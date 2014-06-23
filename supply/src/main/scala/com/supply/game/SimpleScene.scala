@@ -1,11 +1,13 @@
 package com.supply.game
 
+import java.awt.event.KeyEvent
 import javax.media.opengl.{GL2, GLAutoDrawable, GLEventListener}
 import javax.media.opengl.glu.GLU
 import javax.media.opengl.GL._
 import javax.media.opengl.GL2ES1._
 import javax.media.opengl.fixedfunc.GLLightingFunc._
 import javax.media.opengl.GL2GL3._
+import com.supply.game.keyboard.Keyboard
 import com.supply.game.render.Camera
 import com.supply.game.chunk.{Generator, ChunkManager}
 
@@ -16,7 +18,8 @@ class SimpleScene extends GLEventListener {
    */
   val glu = new GLU
   var camera = Camera(0, 50, 0, 0, 0)
-  var mode = 0
+  private var mode = 0
+  val keyboard = new Keyboard()
 
   val managerWidth = 15
   val managerHeight = 15
@@ -29,6 +32,22 @@ class SimpleScene extends GLEventListener {
        y ← 0 until managerHeight;
        z ← 0 until managerDepth) {
     chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize, x, y, z, managerWidth, managerHeight, managerDepth), x, y, z)
+  }
+
+
+  def processKeys() {
+    if (keyboard.contains('s')) {
+      mode = (mode + 1) % 3
+    }
+    else if (keyboard.contains('d')) {
+      chunkManager.delete()
+    }
+    else if (keyboard.contains('w')) {
+      camera = camera.copy(z = camera.z + 1)
+    }
+    else if (keyboard.contains(KeyEvent.VK_ESCAPE)) {
+      System.exit(0)
+    }
   }
 
 
@@ -70,6 +89,7 @@ class SimpleScene extends GLEventListener {
    * Called back by the animator to perform rendering.
    */
   def display(drawable: GLAutoDrawable) {
+    processKeys()
     val gl = drawable.getGL.getGL2
 
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)

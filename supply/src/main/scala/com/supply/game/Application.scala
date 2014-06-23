@@ -11,7 +11,7 @@ object Application extends App {
   /** The entry main() method to setup the top-level container and animator */
 
   // Define constants for the top-level container
-  private val TITLE = "Rotating 3D Shapes (GLCanvas)"  // window's title
+  private val TITLE = "Supply"  // window's title
   private val CANVAS_WIDTH = 600  // width of the drawable
   private val CANVAS_HEIGHT = 480 // height of the drawable
   private val FPS = 60 // animator's target frames per second

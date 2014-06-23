@@ -13,30 +13,12 @@ class Frame extends GLCanvas with KeyListener with MouseListener with MouseMotio
   addMouseMotionListener(this)
   requestFocus()
 
-
-  override def keyTyped(e: KeyEvent): Unit = {
-    println("h")
+  override def keyPressed(e: KeyEvent) {
+    scene.keyboard.addKey(e.getKeyCode)
   }
 
-
-  override def keyPressed(e: KeyEvent): Unit = {
-    println("pr")
-    if (e.getKeyChar == 's') {
-      scene.mode = (scene.mode + 1) % 3
-    }
-    else if (e.getKeyChar == 'd') {
-      scene.chunkManager.delete()
-    }
-    else if (e.getKeyChar == 'w') {
-      scene.camera = scene.camera.copy(z = scene.camera.z + 1)
-    }
-    else if (e.getKeyCode == KeyEvent.VK_ESCAPE) {
-      System.exit(0)
-    }
-  }
-
-  override def keyReleased(e: KeyEvent): Unit = {
-    println(e.getKeyChar)
+  override def keyReleased(e: KeyEvent) {
+    scene.keyboard.removeKey(e.getKeyCode)
   }
 
   def mouseClicked(e: MouseEvent): Unit = {}
@@ -58,5 +40,7 @@ class Frame extends GLCanvas with KeyListener with MouseListener with MouseMotio
   def mouseMoved(e: MouseEvent): Unit = {
     scene.chunkManager.delete()
   }
+
+  override def keyTyped(e: KeyEvent): Unit = {}
 }
 
