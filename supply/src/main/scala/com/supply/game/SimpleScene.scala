@@ -7,6 +7,7 @@ import javax.media.opengl.GL._
 import javax.media.opengl.GL2ES1._
 import javax.media.opengl.fixedfunc.GLLightingFunc._
 import javax.media.opengl.GL2GL3._
+import com.jogamp.opengl.util.gl2.GLUT
 import com.supply.game.keyboard.Keyboard
 import com.supply.game.render.Camera
 import com.supply.game.chunk.{Generator, ChunkManager}
@@ -17,7 +18,8 @@ class SimpleScene extends GLEventListener {
    * to perform one-time initialization. Run only once.
    */
   val glu = new GLU
-  var camera = Camera(0, 50, 0, 0, 0)
+  val glut = new GLUT
+  var camera = Camera(0, 0, 500, 1.3f, 3, 1000, 0)
   private var mode = 0
   val keyboard = new Keyboard()
 
@@ -97,6 +99,7 @@ class SimpleScene extends GLEventListener {
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     gl.glLoadIdentity()
 
+    gl.glColor3f(0, 0, 0)
     gl.glBegin (GL_LINES)
       gl.glVertex3f(0f, 0f, 0f)
       gl.glVertex3f(0f, 0f, 1000f)
@@ -105,7 +108,17 @@ class SimpleScene extends GLEventListener {
       gl.glVertex3f(0f, 0f, 0f)
       gl.glVertex3f(1000f, 0f, 0f)
     gl.glEnd()
+
+    gl.glPushMatrix()
+    gl.glTranslatef(0, 0, 0)
+    gl.glColor3f(1, 0, 0)
+    gl.glRasterPos2d(0, 0)
+    glut.glutBitmapString(8, s"(${camera.angleXY}, ${camera.angleXZ}})")
+    gl.glPopMatrix()
+
     camera.show(gl, glu)
+
+
 
     if (mode == 1) {
       gl.glPolygonMode(GL_FRONT_AND_BACK, GL_POINT)
