@@ -34,18 +34,20 @@ class SimpleScene extends GLEventListener {
     chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize, x, y, z, managerWidth, managerHeight, managerDepth), x, y, z)
   }
 
+  val actionMap = Map[Char, () => Unit](
+    'q' -> (() => mode = (mode + 1) % 3),
+    'w' -> (() => camera = camera.copy(zEye = camera.zEye + 1)),
+    's' -> (() => camera = camera.copy(zEye = camera.zEye - 1)),
+    'a' -> (() => camera = camera.copy(xEye = camera.xEye - 1)),
+    'd' -> (() => camera = camera.copy(xEye = camera.xEye + 1))
+  )
 
   def processKeys() {
-    if (keyboard.contains('s')) {
-      mode = (mode + 1) % 3
+    actionMap.foreach{
+      case (el, fun) if keyboard.contains(el) => fun()
+      case _ =>
     }
-    else if (keyboard.contains('d')) {
-      chunkManager.delete()
-    }
-    else if (keyboard.contains('w')) {
-      camera = camera.copy(z = camera.z + 1)
-    }
-    else if (keyboard.contains(KeyEvent.VK_ESCAPE)) {
+    if (keyboard.contains(KeyEvent.VK_ESCAPE)) {
       System.exit(0)
     }
   }

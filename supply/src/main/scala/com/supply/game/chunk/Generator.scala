@@ -25,8 +25,8 @@ object Generator {
       if (Math.sqrt((x - sideSize.toFloat / 2) * (x - sideSize.toFloat / 2) +
                     (y - sideSize.toFloat / 2) * (y - sideSize.toFloat / 2) +
                     (z - sideSize.toFloat / 2) * (z - sideSize.toFloat / 2)) <= sideSize.toFloat/2){
-             data(x)(y)(z) = BoxType.getRandomNonEmptyType()
-          }
+         data(x)(y)(z) = BoxType.getRandomNonEmptyType()
+      }
     }
     data
   }
