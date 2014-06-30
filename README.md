@@ -3,13 +3,13 @@ supply
 
 Scala voxel engine
 
-
 OpenGL, Scala voxel engine
-sbt
-
+sbt 0.13
 
 Run:
-sbt supply/run    
+sbt supply/run
+
+Inspired by https://sites.google.com/site/letsmakeavoxelengine/
 
 Examples:
 ![alt tag](https://raw.github.com/Reldan/supply/master/documentation/Example1.png)

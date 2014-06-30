@@ -8,9 +8,6 @@ import java.awt.event.{WindowEvent, WindowAdapter}
 
 
 object Application extends App {
-  /** The entry main() method to setup the top-level container and animator */
-
-  // Define constants for the top-level container
   private val TITLE = "Supply"  // window's title
   private val CANVAS_WIDTH = 600  // width of the drawable
   private val CANVAS_HEIGHT = 480 // height of the drawable

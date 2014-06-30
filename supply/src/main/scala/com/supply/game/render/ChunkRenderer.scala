@@ -106,8 +106,8 @@ class ChunkRenderer(chunk: Chunk, renderedTrianglesCount: Int) {
     if (finished && renderedTrianglesCount > 0) {
       gl.glLoadIdentity()
       gl.glTranslatef(x, y, z)
-      val colorAm = Array(1, 1, 1, 0.5f)
-      gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
+//      val colorAm = Array(1, 1, 1, 0.5f)
+//      gl.glLightfv( GL_LIGHT0, GL_DIFFUSE,  colorAm, 0 )
       gl.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY)
       gl.glVertexPointer(3, GL_FLOAT, 0, vertexByteBuffer.asFloatBuffer())
       gl.glEnableClientState(GLPointerFunc.GL_NORMAL_ARRAY)

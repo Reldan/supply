@@ -22,6 +22,7 @@ class SimpleScene extends GLEventListener {
   var camera = Camera(0, 0, 500, 1.3f, 3, 1000, 0)
   private var mode = 0
   val keyboard = new Keyboard()
+  val cameraSpeed = 5
 
   val managerWidth = 15
   val managerHeight = 15
@@ -38,10 +39,10 @@ class SimpleScene extends GLEventListener {
 
   val actionMap = Map[Char, () => Unit](
     'q' -> (() => mode = (mode + 1) % 3),
-    'w' -> (() => camera = camera.copy(zEye = camera.zEye + 1)),
-    's' -> (() => camera = camera.copy(zEye = camera.zEye - 1)),
-    'a' -> (() => camera = camera.copy(xEye = camera.xEye - 1)),
-    'd' -> (() => camera = camera.copy(xEye = camera.xEye + 1))
+    'w' -> (() => camera = camera.moveForward(cameraSpeed)),
+    's' -> (() => camera = camera.moveForward(-cameraSpeed)),
+    'a' -> (() => camera = camera.copy(xEye = camera.xEye - cameraSpeed)),
+    'd' -> (() => camera = camera.copy(xEye = camera.xEye + cameraSpeed))
   )
 
   def processKeys() {
