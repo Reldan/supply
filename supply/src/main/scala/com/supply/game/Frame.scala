@@ -31,13 +31,11 @@ class Frame extends GLCanvas with KeyListener with MouseListener with MouseMotio
 
   def mouseExited(e: MouseEvent): Unit = {}
 
-  def mouseDragged(e: MouseEvent): Unit = {
-    scene.camera = scene.camera.copy(angleXZ = e.getX.toFloat / this.getWidth * Math.PI.toFloat,
-                                     angleXY = e.getY.toFloat / this.getHeight * Math.PI.toFloat)
-  }
+  def mouseDragged(e: MouseEvent): Unit = {}
 
   def mouseMoved(e: MouseEvent): Unit = {
-    scene.chunkManager.delete()
+    scene.camera = scene.camera.copy(angleXY = e.getX.toFloat / this.getWidth  * Math.PI.toFloat - 2 * Math.PI.toFloat,
+      angleXZ = - e.getY.toFloat / this.getHeight * Math.PI.toFloat + 2 * Math.PI.toFloat)
   }
 
   override def keyTyped(e: KeyEvent): Unit = {}
