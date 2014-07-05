@@ -1,5 +1,6 @@
 package com.supply.game
 
+import java.awt.Font
 import java.awt.event.KeyEvent
 import javax.media.opengl.{GL2, GLAutoDrawable, GLEventListener}
 import javax.media.opengl.glu.GLU
@@ -7,6 +8,7 @@ import javax.media.opengl.GL._
 import javax.media.opengl.GL2ES1._
 import javax.media.opengl.fixedfunc.GLLightingFunc._
 import javax.media.opengl.GL2GL3._
+import com.jogamp.opengl.util.awt.TextRenderer
 import com.jogamp.opengl.util.gl2.GLUT
 import com.supply.game.keyboard.Keyboard
 import com.supply.game.render.Camera
@@ -26,15 +28,19 @@ class SimpleScene extends GLEventListener {
 
   val managerWidth = 15
   val managerHeight = 15
-  val managerDepth = 5
+  val managerDepth = 3
 
   val chunkManager = new ChunkManager(managerWidth, managerHeight, managerDepth)
 
+  reterrain()
 
-  for (x ← 0 until managerWidth;
-       y ← 0 until managerHeight;
-       z ← 0 until managerDepth) {
-    chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize, x, y, z, managerWidth, managerHeight, managerDepth), x, y, z)
+  def reterrain() {
+    val gen = Generator.newGen()
+    for (x ← 0 until managerWidth;
+         y ← 0 until managerHeight;
+         z ← 0 until managerDepth) {
+      chunkManager.loadChunk(Generator.terrain(chunkManager.chunkSize, chunkManager.chunkSize, chunkManager.chunkSize, x, y, z, managerWidth, managerHeight, managerDepth, gen), x, y, z)
+    }
   }
 
   val actionMap = Map[Char, () => Unit](
@@ -42,7 +48,8 @@ class SimpleScene extends GLEventListener {
     'w' -> (() => camera = camera.moveForward(cameraSpeed)),
     's' -> (() => camera = camera.moveForward(-cameraSpeed)),
     'a' -> (() => camera = camera.copy(xEye = camera.xEye - cameraSpeed)),
-    'd' -> (() => camera = camera.copy(xEye = camera.xEye + cameraSpeed))
+    'd' -> (() => camera = camera.copy(xEye = camera.xEye + cameraSpeed)),
+    'f' -> (() => reterrain())
   )
 
   def processKeys() {
@@ -110,16 +117,7 @@ class SimpleScene extends GLEventListener {
       gl.glVertex3f(1000f, 0f, 0f)
     gl.glEnd()
 
-    gl.glPushMatrix()
-    gl.glTranslatef(0, 0, 0)
-    gl.glColor3f(1, 0, 0)
-    gl.glRasterPos2d(0, 0)
-    glut.glutBitmapString(8, s"(${camera.angleXY}, ${camera.angleXZ}})")
-    gl.glPopMatrix()
-
     camera.show(gl, glu)
-
-
 
     if (mode == 1) {
       gl.glPolygonMode(GL_FRONT_AND_BACK, GL_POINT)
@@ -129,6 +127,13 @@ class SimpleScene extends GLEventListener {
       gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     }
     chunkManager.render(gl)
+
+    val renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 12))
+    renderer.beginRendering(drawable.getWidth, drawable.getHeight)
+    renderer.setColor(1.0f, 0.2f, 0.2f, 0.8f)
+    renderer.draw(s"(${camera.angleXY}, ${camera.angleXZ})", 10, 10)
+    renderer.endRendering()
+
   }
 
 

@@ -31,16 +31,19 @@ object Generator {
     data
   }
 
-   val gen: ModuleFractal = new ModuleFractal()
+  def newGen() = {
+    val gen: ModuleFractal = new ModuleFractal()
     gen.setAllSourceBasisTypes(BasisType.GRADIENT)
     gen.setAllSourceInterpolationTypes(InterpolationType.CUBIC)
     gen.setNumOctaves(5)
     gen.setFrequency(0.005)
     gen.setType(FractalType.BILLOW)
     gen.setSeed(new Random().nextInt(1000))
+    gen
+  }
 
-  def terrain(width: Int, height: Int, depth: Int, xp: Int, yp: Int, zp: Int, totalX: Int, totalY: Int, totalZ: Int) = {
 
+  def terrain(width: Int, height: Int, depth: Int, xp: Int, yp: Int, zp: Int, totalX: Int, totalY: Int, totalZ: Int, gen: ModuleFractal) = {
     val data = Array.fill(width, height, depth)(0.toByte)
     for (x ← 0 until width; y ← 0 until height) {
       val px = x + xp * width
@@ -49,9 +52,7 @@ object Generator {
       zz = if (zz < 0) 0 else if (zz > depth) depth else zz
        Range(0, zz).foreach
         { z ⇒
-//          val pz = z + zp * depth
           data(x)(y)(z) = ((zp * depth + z ) * 6 / (totalZ * depth) + 1).toByte
-//          data(x)(y)(z) = Math.abs(1).toByte
         }
     }
     data
