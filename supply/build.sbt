@@ -19,4 +19,5 @@ libraryDependencies ++= Seq("org.jogamp.jogl" % "jogl-all" % vers classifier sp,
 "org.jogamp.jogl" % "jogl-all" % vers,
 "org.jogamp.gluegen" % "gluegen-rt" % vers classifier sp,
 "org.jogamp.gluegen" % "gluegen-rt" % vers,
-"org.scalatest" % "scalatest_2.10" % "2.0" % "test")
+"org.scalatest" % "scalatest_2.10" % "2.0" % "test",
+"net.sf.sociaal" % "jbullet" % "3.0.0.20130526")

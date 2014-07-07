@@ -11,7 +11,9 @@ class Frame extends GLCanvas with KeyListener with MouseListener with MouseMotio
   addKeyListener(this)
   addMouseListener(this)
   addMouseMotionListener(this)
+  setFocusable(true)
   requestFocus()
+  requestFocusInWindow()
 
   override def keyPressed(e: KeyEvent) {
     scene.keyboard.addKey(e.getKeyCode)
@@ -34,8 +36,8 @@ class Frame extends GLCanvas with KeyListener with MouseListener with MouseMotio
   def mouseDragged(e: MouseEvent): Unit = {}
 
   def mouseMoved(e: MouseEvent): Unit = {
-    scene.camera = scene.camera.copy(angleXY = e.getX.toFloat / this.getWidth  * Math.PI.toFloat - 2 * Math.PI.toFloat,
-      angleXZ = - e.getY.toFloat / this.getHeight * Math.PI.toFloat + 2 * Math.PI.toFloat)
+    scene.camera = scene.camera.copy(angleXY = e.getX.toFloat / this.getWidth  * Math.PI.toFloat,
+      angleXZ = - e.getY.toFloat / this.getHeight * Math.PI.toFloat )
   }
 
   override def keyTyped(e: KeyEvent): Unit = {}

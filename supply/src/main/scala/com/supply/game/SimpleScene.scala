@@ -47,7 +47,7 @@ class SimpleScene extends GLEventListener {
     'q' -> (() => mode = (mode + 1) % 3),
     'w' -> (() => camera = camera.moveForward(cameraSpeed)),
     's' -> (() => camera = camera.moveForward(-cameraSpeed)),
-    'a' -> (() => camera = camera.copy(xEye = camera.xEye - cameraSpeed)),
+    'a' -> (() => camera = camera.moveLeft(cameraSpeed)),
     'd' -> (() => camera = camera.copy(xEye = camera.xEye + cameraSpeed)),
     'f' -> (() => reterrain())
   )
@@ -97,6 +97,11 @@ class SimpleScene extends GLEventListener {
    */
   def dispose(drawable: GLAutoDrawable) {}
 
+
+  def infoMessage = {
+    "'w' - forward, 's' - backward, 'f' - rebuild, 'q' - change view mode"
+  }
+
   /**
    * Called back by the animator to perform rendering.
    */
@@ -131,7 +136,8 @@ class SimpleScene extends GLEventListener {
     val renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 12))
     renderer.beginRendering(drawable.getWidth, drawable.getHeight)
     renderer.setColor(1.0f, 0.2f, 0.2f, 0.8f)
-    renderer.draw(s"(${camera.angleXY}, ${camera.angleXZ})", 10, 10)
+//    renderer.draw(s"(${camera.angleXY}, ${camera.angleXZ})", 10, 10)
+    renderer.draw(infoMessage, 10, 10)
     renderer.endRendering()
 
   }
