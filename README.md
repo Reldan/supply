@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/reldan/supply.png?label=ready&title=Ready)](https://waffle.io/reldan/supply)
 supply
 ======
 
