@@ -24,6 +24,8 @@ case class Camera(xEye: Float, yEye: Float, zEye: Float,
       zEye + dz, 1, 0, 0)
     gl.glMatrixMode(GL_MODELVIEW)
     gl.glLoadIdentity()
+//    println(angleXY)
+//    println(angleXZ)
   }
 
   def deltas(rho: Float) = {
@@ -44,5 +46,11 @@ case class Camera(xEye: Float, yEye: Float, zEye: Float,
     this.copy(zEye = zEye + distance,
       yEye = yEye,
       xEye = xEye + distance)
+  }
+
+  def changeAngles(deltaAngleXY: Float, deltaAngleXZ: Float) = {
+    val xy = if (Math.abs(deltaAngleXY) < 0.01) 0 else deltaAngleXY
+    val xz = if (Math.abs(deltaAngleXZ) < 0.01) 0 else deltaAngleXZ
+    this.copy(angleXY = angleXY + xy, angleXZ = angleXZ + xz)
   }
 }

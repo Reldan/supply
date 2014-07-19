@@ -26,8 +26,8 @@ class SimpleScene extends GLEventListener {
   val keyboard = new Keyboard()
   val cameraSpeed = 5
 
-  val managerWidth = 15
-  val managerHeight = 15
+  val managerWidth = 25
+  val managerHeight = 25
   val managerDepth = 3
 
   val chunkManager = new ChunkManager(managerWidth, managerHeight, managerDepth)

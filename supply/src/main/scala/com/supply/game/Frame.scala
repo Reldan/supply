@@ -1,10 +1,12 @@
 package com.supply.game
 
+import java.awt.Robot
 import java.awt.event._
 import javax.media.opengl.awt.GLCanvas
 
 class Frame extends GLCanvas with KeyListener with MouseListener with MouseMotionListener {
   val scene = new SimpleScene()
+  val robot = new Robot()
 
   /** Constructor to setup the GUI for this Component */
   addGLEventListener(scene)
@@ -36,8 +38,11 @@ class Frame extends GLCanvas with KeyListener with MouseListener with MouseMotio
   def mouseDragged(e: MouseEvent): Unit = {}
 
   def mouseMoved(e: MouseEvent): Unit = {
-    scene.camera = scene.camera.copy(angleXY = e.getX.toFloat / this.getWidth  * Math.PI.toFloat,
-      angleXZ = - e.getY.toFloat / this.getHeight * Math.PI.toFloat )
+    val point = e.getLocationOnScreen
+    scene.camera = scene.camera.changeAngles(
+      (-this.getWidth / 2 + point.getX).toFloat / this.getWidth,
+      (this.getHeight / 2 - point.getY).toFloat / this.getHeight / 2)
+    robot.mouseMove(this.getWidth / 2, this.getHeight / 2)
   }
 
   override def keyTyped(e: KeyEvent): Unit = {}
