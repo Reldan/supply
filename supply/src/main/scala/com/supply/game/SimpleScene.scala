@@ -69,7 +69,7 @@ class SimpleScene extends GLEventListener {
     gl.glClearDepth(1.0f)
     gl.glEnable(GL_DEPTH_TEST)
     gl.glDepthFunc(GL_LEQUAL)
-    gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+   // gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     gl.glShadeModel(GL_SMOOTH)
     val mat_specular = Array(0.5f, 0.5f, 0.5f, 1.0f)
     val mat_shininess = Array(250.0f)

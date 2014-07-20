@@ -40,7 +40,7 @@ class Frame extends GLCanvas with KeyListener with MouseListener with MouseMotio
   def mouseMoved(e: MouseEvent): Unit = {
     val point = e.getLocationOnScreen
     scene.camera = scene.camera.changeAngles(
-      (-this.getWidth / 2 + point.getX).toFloat / this.getWidth,
+      (this.getWidth / 2 - point.getX).toFloat / this.getWidth,
       (this.getHeight / 2 - point.getY).toFloat / this.getHeight / 2)
     robot.mouseMove(this.getWidth / 2, this.getHeight / 2)
   }

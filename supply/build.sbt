@@ -20,4 +20,10 @@ libraryDependencies ++= Seq("org.jogamp.jogl" % "jogl-all" % vers classifier sp,
 "org.jogamp.gluegen" % "gluegen-rt" % vers classifier sp,
 "org.jogamp.gluegen" % "gluegen-rt" % vers,
 "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
-"net.sf.sociaal" % "jbullet" % "3.0.0.20130526")
+"net.sf.sociaal" % "jbullet" % "3.0.0.20130526",
+"com.badlogicgames.gdx" % "gdx" % "1.2.0",
+"com.badlogicgames.gdx" % "gdx-backend-lwjgl" % "1.2.0",
+"com.badlogicgames.gdx" % "gdx-platform" % "1.2.0",
+"com.badlogicgames.gdx" % "gdx-platform" % "1.2.0" classifier "natives-desktop",
+"com.badlogicgames.gdx" % "gdx-freetype" % "1.2.0"
+)

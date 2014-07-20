@@ -29,9 +29,9 @@ case class Camera(xEye: Float, yEye: Float, zEye: Float,
   }
 
   def deltas(rho: Float) = {
-    val r = Array(rho * Math.sin(angleXY) * Math.cos(angleXZ),
-         rho * Math.cos(angleXY),
-         rho * Math.sin(angleXY) * Math.sin(angleXZ)).map(_.toFloat)
+    val r = Array(rho * Math.sin(angleXZ) * Math.cos(angleXY),
+         rho * Math.cos(angleXZ) * Math.sin(angleXY),
+         rho * Math.cos(angleXZ)).map(_.toFloat)
     (r(0), r(1), r(2))
   }
 
@@ -51,6 +51,8 @@ case class Camera(xEye: Float, yEye: Float, zEye: Float,
   def changeAngles(deltaAngleXY: Float, deltaAngleXZ: Float) = {
     val xy = if (Math.abs(deltaAngleXY) < 0.01) 0 else deltaAngleXY
     val xz = if (Math.abs(deltaAngleXZ) < 0.01) 0 else deltaAngleXZ
-    this.copy(angleXY = angleXY + xy, angleXZ = angleXZ + xz)
+    val newAngleXY = angleXY + xy % 2 * Math.PI.toFloat
+    val newAngleXZ = angleXZ + xz % 2 * Math.PI.toFloat
+    this.copy(angleXY = newAngleXY, angleXZ = newAngleXZ)
   }
 }
