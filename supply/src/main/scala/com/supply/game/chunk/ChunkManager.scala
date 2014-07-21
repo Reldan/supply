@@ -2,6 +2,8 @@ package com.supply.game.chunk
 
 import javax.media.opengl.GL2
 
+import com.badlogic.gdx.graphics.GL20
+
 class ChunkManager(height: Int, width: Int, depth: Int = 1) {
   val chunkSize = 16
 
